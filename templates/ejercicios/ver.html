@@ -1,0 +1,129 @@
+{# /templates/ejercicios/ver.html #}
+
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 style="display: flex; align-items: center; gap: 10px;">
+    {{ ejercicio.nombre }}
+    <form method="GET" action="{{ url_for('ejercicios.gestionar', clave=clave) }}" style="display:inline;">
+        <button type="submit">Editar</button>
+    </form>
+    <form method="POST" action="{{ url_for('ejercicios.eliminar', clave=clave) }}" style="display:inline;"
+        onsubmit="return confirm('¿Estás seguro de que quieres eliminar este ejercicio? \n Se perderán sus estadisticas y no podrá usarse en futuros entrenamientos.');">
+        <button type="submit">Eliminar</button>
+    </form>
+</h2>
+
+{% if ejercicio.grupo_muscular and ejercicio.equipamiento %}
+    <p><em>{{ ejercicio.grupo_muscular }} | {{ ejercicio.equipamiento }}</em></p>
+{% endif %}
+{% if ejercicio.descripcion %}
+    <p><strong>Descripción:</strong> {{ ejercicio.descripcion }}</p>
+{% endif %}
+
+<div style="display: flex; align-items: flex-start; gap: 40px;">
+    <!-- 🟩 IZQUIERDA: Historial -->
+    <div style="flex: 2;">
+        {% include "ejercicios/historial.html" %}
+    </div>
+
+    <!-- 🟦 DERECHA: Estadísticas -->
+    <div style="flex: 2.5; max-width: 500px; margin-right: 40px; position: sticky; top: 100px; padding: 10px; border: 1px solid #ddd; background: #fafafa; display: flex; flex-direction: column; gap: 16px; height: auto;">
+        <h3 style="margin: 0 0 8px;">Estadísticas</h3>
+
+        <!-- Peso máximo -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>Peso máx. :</strong> {{ stats.max_weight.value }} kg</div>
+            <div>
+                {{ stats.max_weight.peso }} kg x {{ stats.max_weight.reps }} reps
+                ({{ stats.max_weight.fecha.split(" ")[0] }})
+            </div>
+        </div>
+
+        <!-- Volumen máximo -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>Vol. máx. :</strong> {{ stats.max_volume.value }} kg</div>
+            <div>
+                {{ stats.max_volume.peso }} kg x {{ stats.max_volume.reps }} reps
+                ({{ stats.max_volume.fecha.split(" ")[0] }})
+            </div>
+        </div>
+
+        <!-- Mejor 1RM estimado -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div><strong>1RM est. :</strong> {{ stats.best_1rm.estimate|round(1) }} kg</div>
+            <div>
+                {{ stats.best_1rm.peso }} kg x {{ stats.best_1rm.reps }} reps
+                ({{ stats.best_1rm.fecha.split(" ")[0] }})
+            </div>
+        </div>
+
+        <hr style="margin: 0; border: none; border-top: 1px solid #ddd;">
+
+        <!-- Totales -->
+        <div style="display: flex; justify-content: space-between;">
+            <div><strong>Reps totales:</strong></div>
+            <div>{{ stats.total_reps }}</div>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+            <div><strong>Vol. acumulado:</strong></div>
+            <div>{{ stats.total_volume }} kg</div>
+        </div>
+
+        <!-- Gráfico 1RM en el tiempo -->
+        <canvas id="chart-1rm" height="150" style="width: 100%;"></canvas>
+
+        <!-- 1) Contenedor JSON (solo JSON, no JS) -->
+        <script type="application/json" id="chart-data">
+            {{ {"labels": rm_labels, "values": rm_values} | tojson }}
+        </script>
+
+        <!-- 2) Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Obtener el JSON y construir el gráfico
+            const raw = document.getElementById('chart-data').textContent;
+            const chartData = JSON.parse(raw);
+
+            // Reformatear cada "DD/MM/YYYY" a "D mmm"
+            const formattedLabels = chartData.labels.map(label => {
+                const [d, m, y] = label.split('/');
+                const date = new Date(`${y}-${m}-${d}`);
+                return date.toLocaleDateString('es-ES', {
+                    day:   'numeric',
+                    month: 'short'
+                });
+            });
+
+            const ctx = document.getElementById('chart-1rm').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                labels: formattedLabels,
+                datasets: [{
+                    label: '1RM estimado',
+                    data: chartData.values,
+                    fill: false,
+                    tension: 0.1
+                }]
+                },
+                options: {
+                scales: {
+                    x: {
+                    display: true,
+                    title: { display: true, text: 'Fecha' }
+                    },
+                    y: {
+                    beginAtZero: true,
+                    title: { display: true, text: '1RM (kg)' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+                }
+            });
+        </script>
+    </div>
+</div>
+{% endblock %}

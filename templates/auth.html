@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>{% if mode == 'login' %}Iniciar sesión{% else %}Registro de usuario{% endif %}</h2>
+
+<form method="post" action="{{ url_for('auth.' + mode) }}">
+    <!-- usuario -->
+    <label>Usuario:
+        <input type="text" name="nombre" value="{{ nombre }}" required>
+    </label><br><br>
+
+    <!-- contraseña -->
+    <label>Contraseña:
+        <input type="password" name="contraseña" required>
+    </label><br><br>
+
+    <!-- botón dinámico -->
+    <button type="submit">
+        {% if mode == 'login' %}Entrar{% else %}Registrarse{% endif %}
+    </button>
+
+    <!-- error inline -->
+    {% if error %}
+        <p style="color:red; margin-top:5px;">{{ error }}</p>
+    {% endif %}
+</form>
+
+<!-- enlace para cambiar de modo -->
+{% if mode == 'login' %}
+<p>¿No tienes cuenta? <a href="{{ url_for('auth.register') }}">Regístrate aquí</a></p>
+{% else %}
+<p>¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión aquí</a></p>
+{% endif %}
+
+{% endblock %}

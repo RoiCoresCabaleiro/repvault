@@ -1,0 +1,126 @@
+{# templates/plantillas/actual.html #}
+
+{% extends "layout.html" %}
+{% import "shared/ejercicios_filtro.html" as filtro %}
+
+{% block content %}
+    <h2>
+        Entrenamiento en curso -
+        <span id="cronometro" style="font-weight: normal; font-size: 0.8em; margin-left: 2ch;">
+            cargando cronómetro...
+        </span>
+    </h2>
+
+    <form id="form-actual" method="POST" action="{{ url_for('entrenamientos.actual') }}">
+        <label><strong>Nombre del entrenamiento:</strong></label>
+        <input type="text" name="nombre_plantilla" value="{{ entrenamiento.nombre_plantilla }}"><br><br>
+
+        <label><strong>Observaciones:</strong></label><br>
+        <textarea name="observaciones" rows="3" cols="50">{{ entrenamiento.observaciones }}</textarea><br><br>
+
+        <div style="display: flex; justify-content: space-between; gap: 40px;">
+            
+            <!-- 🟩 COLUMNA IZQUIERDA: Ejercicios en curso -->
+            <div style="flex: 1;">
+                {% for clave, series in entrenamiento.ejercicios.items() %}
+                    <div style="margin-bottom: 20px;">
+                        <h3>{% for k, ej in ejercicios %}{% if k == clave %}{{ ej.nombre }}{% endif %}{% endfor %}</h3>
+                        <ul>
+                            {% for serie in series %}
+                                {% set i = loop.index0 %}
+                                <li>
+                                    Serie {{ i+1 }}:
+                                    Peso: <input type="number" name="peso_{{ clave }}_{{ i }}" value="{{ serie.peso }}" step="0.01" min="0" placeholder="{{ ultimos_valores[clave][i].peso if i < ultimos_valores[clave]|length else '' }}">
+                                    Reps: <input type="number" name="reps_{{ clave }}_{{ i }}" value="{{ serie.reps }}" step="1" min="1" placeholder="{{ ultimos_valores[clave][i].reps if i < ultimos_valores[clave]|length else '' }}">
+                                    <input type="checkbox" name="hecha_{{ clave }}_{{ i }}" {% if serie.hecha %}checked{% endif %}>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <button type="submit" name="modificar_series" value="añadir-{{ clave }}">+ Añadir serie</button>
+                        <button type="submit" name="modificar_series" value="quitar-{{ clave }}">- Quitar serie</button>
+                        <button type="submit" name="eliminar_ejercicio" value="{{ clave }}" style="margin-left: 10px;">Eliminar ejercicio</button>
+                    </div>
+                {% endfor %}
+
+                <br>
+                <button type="submit" name="validar" id="boton-validar">Terminar entrenamiento</button>
+                <button type="submit" formaction="{{ url_for('entrenamientos.cancelar') }}" style="margin-left: 15px;" onclick="return confirm('¿Estás seguro de que quieres cancelar el entrenamiento? Se perderá todo el progreso.')">Cancelar entrenamiento</button>
+                <br>
+                {% if error %}
+                    <p id="error-finalizar" style="color:red; margin-top: 10px;">{{ error }}</p>
+                {% endif %}
+            </div>
+
+            <!-- 🟦 COLUMNA DERECHA: Filtros y añadir ejercicios -->
+            {{ filtro.ejercicios_filtro( ejercicios_disponibles, grupos_validos, equipamientos_validos, grupo_filtro, equipamiento_filtro) }}
+        </div>
+    </form>
+
+    {% if show_confirm %}
+    <script>
+        if (confirm("¿Has acabado?\nSe eliminarán todas las series inválidas o sin marcar como completadas.")) {
+            const form = document.getElementById("form-actual");
+            form.action = "{{ url_for('entrenamientos.finalizar') }}";
+            form.submit();
+        }
+    </script>
+    {% endif %}
+
+<script>
+    const inicioTexto = "{{ entrenamiento.inicio }}";
+    const horaStr = inicioTexto.split(" ")[1];  // "14:38:10"
+
+    if (horaStr) {
+        const [hora, minuto, segundo] = horaStr.split(":").map(Number);
+
+        const ahora = new Date();
+        const inicio = new Date();
+        inicio.setHours(hora, minuto, segundo, 0);
+
+        function actualizarCronometro() {
+            const ahora = new Date();
+            const diff = Math.floor((ahora - inicio) / 1000); // en segundos
+
+            const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+            const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+            const s = String(diff % 60).padStart(2, '0');
+
+            document.getElementById("cronometro").textContent = `${h}:${m}:${s}`;
+        }
+
+        actualizarCronometro();
+        setInterval(actualizarCronometro, 1000);
+    }
+</script>
+<script>
+    document.querySelectorAll("input[type=checkbox][name^='hecha_']").forEach(checkbox => {
+        checkbox.addEventListener("change", function () {
+            const clave = this.name.split("_")[1];
+            const i = this.name.split("_")[2];
+    
+            const peso = document.querySelector(`input[name='peso_${clave}_${i}']`);
+            const reps = document.querySelector(`input[name='reps_${clave}_${i}']`);
+    
+            // Ya existe el mensaje de error?
+            const existing = document.getElementById(`error_${clave}_${i}`);
+            if (existing) existing.remove();
+    
+            // Verificar que no estén vacíos
+            if (!peso.value.trim() || !reps.value.trim()) {
+                // Cancelar marcado
+                this.checked = false;
+    
+                // Crear mensaje de error
+                const msg = document.createElement("p");
+                msg.id = `error_${clave}_${i}`;
+                msg.style.color = "red";
+                msg.style.fontSize = "0.85em";
+                msg.textContent = "Completa peso y repeticiones antes de marcar como hecha.";
+    
+                // Insertarlo debajo del checkbox
+                this.parentElement.appendChild(msg);
+            }
+        });
+    });
+    </script>
+{% endblock %}

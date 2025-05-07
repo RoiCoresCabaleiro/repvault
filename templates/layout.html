@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>ALS Gym Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+    <style>
+        body.scroll-restore-pending {
+            visibility: hidden;
+        }
+    </style>
+</head>
+
+<body class="scroll-restore-pending">
+    <header>
+        <h1>ALS Gym Tracker</h1>
+        <nav>
+            <a href="{{ url_for('home') }}">Inicio</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('ejercicios.lista') }}">Ejercicios</a>
+                <a href="{{ url_for('plantillas.lista') }}">Plantillas</a>
+                <a href="{{ url_for('entrenamientos.historial') }}">Historial</a>
+                <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+                <a href="{{ url_for('auth.register') }}">Registro</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main style="padding-bottom: 50px;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const scroll = sessionStorage.getItem("scrollPos");
+        if (scroll !== null) {
+            window.scrollTo(0, parseInt(scroll));
+            sessionStorage.removeItem("scrollPos");
+        }
+        document.body.classList.remove("scroll-restore-pending");
+    });
+
+    const form = document.querySelector("form");
+    if (form) {
+        form.addEventListener("submit", () => {
+            sessionStorage.setItem("scrollPos", window.scrollY);
+        });
+    }
+    </script>
+</body>
+</html>

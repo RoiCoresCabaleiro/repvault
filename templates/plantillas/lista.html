@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Mis plantillas de entrenamiento</h2>
+
+    <a href="{{ url_for('plantillas.gestionar') }}">Crear nueva plantilla</a><br><br>
+
+    {% if plantillas %}
+        <ul>
+        {% for clave, plantilla in plantillas %}
+            <li>
+                <a href="{{ url_for('plantillas.ver', clave=clave) }}">
+                    <strong>{{ plantilla.nombre }}</strong>
+                </a><br>
+                {% if plantilla.observaciones %}
+                    <em>{{ plantilla.observaciones }}</em><br>
+                {% endif %}
+                <p>{{ plantilla.ejercicios|length }} ejercicios</p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tienes ninguna plantilla aún.</p>
+    {% endif %}
+{% endblock %}

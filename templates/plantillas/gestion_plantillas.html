@@ -1,0 +1,47 @@
+{# templates/plantillas/gestion.html #}
+
+{% extends "layout.html" %}
+{% import "shared/ejercicios_filtro.html" as filtro %}
+
+{% block content %}
+    <h2>{{ "Editar plantilla" if is_edit else "Crear plantilla" }}</h2>
+
+    <form method="POST">
+        <div style="display: flex; justify-content: space-between; gap: 40px;">
+
+            <!-- 🟩 COLUMNA IZQUIERDA: Datos de la plantilla -->
+            <div style="flex: 1;">
+                <label for="nombre">Nombre:</label><br>
+                <input type="text" id="nombre" name="nombre" value="{{ plantilla.nombre }}">
+                <br><br>
+
+                <label for="observaciones">Observaciones:</label><br>
+                <textarea id="observaciones" name="observaciones" rows="3" cols="40">{{ plantilla.observaciones }}</textarea>
+                <br><br>
+
+                <h3>Ejercicios de la plantilla:</h3>
+                {% for soid, ej in ejercicios_seleccionados %}
+                <div style="margin-bottom: 10px;">
+                    <strong>{{ ej.nombre }}</strong> -
+                    Series:
+                    <input type="number" name="series_{{ loop.index0 }}" value="{{ plantilla.ejercicios[soid] }}" min="1" style="width: 50px;">
+                    <button type="submit" name="mover" value="subir-{{ loop.index0 }}">↑</button>
+                    <button type="submit" name="mover" value="bajar-{{ loop.index0 }}">↓</button>
+                    <button type="submit" name="quitar" value="{{ soid }}">Eliminar</button>
+                </div>
+                {% endfor %}
+
+                <br>
+                <button type="submit" name="{{ 'guardar_cambios' if is_edit else 'guardar' }}">
+                    {{ 'Guardar cambios' if is_edit else 'Guardar plantilla' }}
+                </button>
+                {% if error %}
+                <p style="color:red; margin-top:10px;">{{ error }}</p>
+                {% endif %}
+            </div>
+
+            <!-- 🟦 COLUMNA DERECHA: Filtros y añadir ejercicios -->
+            {{ filtro.ejercicios_filtro( ejercicios_disponibles, grupos_validos, equipamientos_validos, grupo_filtro, equipamiento_filtro) }}
+        </div>
+    </form>
+{% endblock %}

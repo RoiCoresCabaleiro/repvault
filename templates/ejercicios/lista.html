@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Mis ejercicios</h2>
+
+<a href="{{ url_for('ejercicios.gestionar') }}">Crear nuevo ejercicio</a><br><br>
+
+<!-- Filtros -->
+<form method="get" style="margin-bottom: 20px;">
+    <label>Grupo muscular:</label>
+    <select name="grupo_muscular">
+        <option value="">-- Todos --</option>
+        {% for grupo in grupos_validos %}
+            <option value="{{ grupo }}" {% if grupo == grupo_filtro %}selected{% endif %}>{{ grupo }}</option>
+        {% endfor %}
+    </select>
+
+    <label style="margin-left: 20px;">Equipamiento:</label>
+    <select name="equipamiento">
+        <option value="">-- Todos --</option>
+        {% for eq in equipamientos_validos %}
+            <option value="{{ eq }}" {% if eq == equipamiento_filtro %}selected{% endif %}>{{ eq }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" style="margin-left: 20px;">Filtrar</button>
+</form>
+
+<!-- Lista de ejercicios -->
+{% if ejercicios %}
+    <ul>
+    {% for clave, ej in ejercicios %}
+        <li style="margin-bottom: 15px;">
+            <a href="{{ url_for('ejercicios.ver', clave=clave) }}">{{ ej.nombre }}</a><br>
+            <small><em>{{ ej.grupo_muscular }} | {{ ej.equipamiento }}</em></small>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No se encontraron ejercicios con esos filtros.</p>
+{% endif %}
+{% endblock %}
+

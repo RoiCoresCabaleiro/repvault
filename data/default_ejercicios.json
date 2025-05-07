@@ -1,0 +1,321 @@
+[
+    {
+      "nombre": "Press Banca (Barra)",
+      "descripcion": "Press plano con barra en banco horizontal",
+      "grupo_muscular": "Pecho",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Press de Pecho (Mancuernas)",
+      "descripcion": "Press plano con mancuernas en banco horizontal",
+      "grupo_muscular": "Pecho",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Press de Pecho (Maquina)",
+      "descripcion": "Press de pecho en máquina guiada",
+      "grupo_muscular": "Pecho",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Aperturas (Máquina)",
+      "descripcion": "Aperturas de pecho en máquina guiada",
+      "grupo_muscular": "Pecho",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Aperturas (Cable)",
+      "descripcion": "Aperturas de pecho con poleas altas",
+      "grupo_muscular": "Pecho",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Dominadas",
+      "descripcion": "Tracción vertical con peso corporal en barra fija",
+      "grupo_muscular": "Espalda",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Jalón al Pecho (Cable)",
+      "descripcion": "Jalón de dorsal en polea alta con agarre amplio",
+      "grupo_muscular": "Espalda",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Jalon al Pecho (Maquina)",
+      "descripcion": "Jalón de dorsal en máquina guiada",
+      "grupo_muscular": "Espalda",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Remo con barra",
+      "descripcion": "Remo inclinado con barra desde cintura",
+      "grupo_muscular": "Espalda",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Remo sentado (Cable)",
+      "descripcion": "Remo sentado en polea baja con agarre cerrado",
+      "grupo_muscular": "Espalda",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Remo sentado (Maquina)",
+      "descripcion": "Remo sentado en máquina guiada",
+      "grupo_muscular": "Espalda",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Peso muerto (Barra)",
+      "descripcion": "Peso muerto convencional con barra",
+      "grupo_muscular": "Espalda",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Encogimiento de Trapecio (Mancuernas)",
+      "descripcion": "Elevación de hombros para trapecios con mancuernas",
+      "grupo_muscular": "Espalda",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Press militar (Barra)",
+      "descripcion": "Press de hombros de pie con barra",
+      "grupo_muscular": "Hombros",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Press militar (Mancuernas)",
+      "descripcion": "Press de hombros sentado con mancuernas",
+      "grupo_muscular": "Hombros",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Press militar (Máquina)",
+      "descripcion": "Press de hombros en máquina guiada",
+      "grupo_muscular": "Hombros",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Elevaciones Laterales (Mancuernas)",
+      "descripcion": "Elevación lateral de hombros con mancuernas",
+      "grupo_muscular": "Hombros",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Elevaciones Laterales (Cable)",
+      "descripcion": "Elevación lateral en polea baja",
+      "grupo_muscular": "Hombros",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Elevaciones Laterales (Máquina)",
+      "descripcion": "Elevación lateral en máquina guiada",
+      "grupo_muscular": "Hombros",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Aperturas inversas (Máquina)",
+      "descripcion": "Aperturas inversas de deltoides posteriores en máquina",
+      "grupo_muscular": "Hombros",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Aperturas inversas (Cable)",
+      "descripcion": "Aperturas inversas de deltoides posteriores en polea baja",
+      "grupo_muscular": "Hombros",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Curl de Biceps (Mancuernas)",
+      "descripcion": "Curl de bíceps de pie con mancuernas",
+      "grupo_muscular": "Bíceps",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Curl de Biceps (Cable)",
+      "descripcion": "Curl de bíceps en polea baja con barra o cuerda",
+      "grupo_muscular": "Bíceps",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Curl en predicador (Barra)",
+      "descripcion": "Curl en banco predicador con barra EZ o recta",
+      "grupo_muscular": "Bíceps",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Curl en predicador (Máquina)",
+      "descripcion": "Curl en banco predicador en máquina guiada",
+      "grupo_muscular": "Bíceps",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Curl de martillo (Mancuernas)",
+      "descripcion": "Curl de martillo con mancuernas (agarre neutro)",
+      "grupo_muscular": "Bíceps",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Curl de martillo (Cable)",
+      "descripcion": "Curl martillo en polea baja con cuerda",
+      "grupo_muscular": "Bíceps",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Extension de Triceps (Cable)",
+      "descripcion": "Extensión de tríceps en polea alta con barra",
+      "grupo_muscular": "Tríceps",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Extension de Triceps por encima de la cabeza (Cable)",
+      "descripcion": "Extensión de tríceps por encima de la cabeza en polea con cuerda",
+      "grupo_muscular": "Tríceps",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Extension de Triceps por encima de la cabeza (Mancuernas)",
+      "descripcion": "Extensión sentado con mancuerna por encima de la cabeza",
+      "grupo_muscular": "Tríceps",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Press Francés (Barra)",
+      "descripcion": "Press francés en banco plano con barra EZ",
+      "grupo_muscular": "Tríceps",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Press Francés (Mancuernas)",
+      "descripcion": "Press francés en banco plano con mancuernas",
+      "grupo_muscular": "Tríceps",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Fondos en paralelas",
+      "descripcion": "Fondos para tríceps en barras paralelas",
+      "grupo_muscular": "Tríceps",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Sentadilla alta (Barra)",
+      "descripcion": "Sentadilla trasera con barra en posición alta",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Sentadilla alta (Smith)",
+      "descripcion": "Sentadilla trasera en máquina Smith",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Sentadilla Hack",
+      "descripcion": "Sentadilla en máquina Hack",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Sentadilla pendular",
+      "descripcion": "Sentadilla en máquina pendular",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Prensa de piernas",
+      "descripcion": "Prensa inclinada de piernas en máquina",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Extension de Cuadriceps",
+      "descripcion": "Extensión de piernas en máquina",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Zancadas (Mancuernas)",
+      "descripcion": "Zancadas con mancuernas",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Zancada Búlgara (Mancuernas)",
+      "descripcion": "Sentadilla búlgara dividida con mancuernas",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Curl Femoral sentado",
+      "descripcion": "Curl femoral sentado en máquina",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Curl Femoral tumbado",
+      "descripcion": "Curl femoral tumbado en máquina",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Peso muerto rumano (Barra)",
+      "descripcion": "Peso muerto rumano con barra",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Peso muerto rumano (Mancuernas)",
+      "descripcion": "Peso muerto rumano con mancuernas",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Aducción de cadera",
+      "descripcion": "Aducción de cadera en máquina",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Abducción de cadera",
+      "descripcion": "Abducción de cadera en máquina",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Hip Thrust (Barra)",
+      "descripcion": "Hip thrust con barra en banco",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Peso libre"
+    },
+    {
+      "nombre": "Hip Thrust (Máquina)",
+      "descripcion": "Hip thrust en máquina guiada",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Elevación de gemelos (Máquina)",
+      "descripcion": "Elevación de gemelos de pie en máquina guiada",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Elevación de gemelos en prensa",
+      "descripcion": "Elevación de gemelos sentado en prensa de piernas",
+      "grupo_muscular": "Piernas",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Crunch Abdominal (Máquina)",
+      "descripcion": "Crunch de tronco acostado en máquina guiada",
+      "grupo_muscular": "Abdomen",
+      "equipamiento": "Máquina"
+    },
+    {
+      "nombre": "Crunch Abdominal (Cable)",
+      "descripcion": "Crunch arrodillado con polea alta y cuerda",
+      "grupo_muscular": "Abdomen",
+      "equipamiento": "Máquina"
+    }
+  ]
+  

@@ -1,0 +1,37 @@
+[
+    {
+      "nombre": "PUSH",
+      "observaciones": "Empujes del tren superior",
+      "ejercicios": [
+        { "nombre_ejercicio": "Press de Pecho (Mancuernas)",               "series": 3 },
+        { "nombre_ejercicio": "Press militar (Máquina)",                    "series": 3 },
+        { "nombre_ejercicio": "Aperturas (Máquina)",                       "series": 3 },
+        { "nombre_ejercicio": "Elevaciones Laterales (Mancuernas)",        "series": 3 },
+        { "nombre_ejercicio": "Press Francés (Barra)",                     "series": 3 },
+        { "nombre_ejercicio": "Extension de Triceps por encima de la cabeza (Cable)", "series": 3 }
+      ]
+    },
+    {
+      "nombre": "PULL",
+      "observaciones": "Tracciones del tren superior",
+      "ejercicios": [
+        { "nombre_ejercicio": "Jalón al Pecho (Cable)",      "series": 3 },
+        { "nombre_ejercicio": "Remo sentado (Maquina)",      "series": 3 },
+        { "nombre_ejercicio": "Aperturas inversas (Máquina)", "series": 3 },
+        { "nombre_ejercicio": "Curl de Biceps (Mancuernas)",  "series": 3 },
+        { "nombre_ejercicio": "Curl en predicador (Máquina)", "series": 3 }
+      ]
+    },
+    {
+      "nombre": "LEGS",
+      "observaciones": "Tren inferior",
+      "ejercicios": [
+        { "nombre_ejercicio": "Curl Femoral sentado",        "series": 3 },
+        { "nombre_ejercicio": "Sentadilla Hack",             "series": 2 },
+        { "nombre_ejercicio": "Elevación de gemelos en prensa", "series": 4 },
+        { "nombre_ejercicio": "Extension de Cuadriceps",      "series": 3 },
+        { "nombre_ejercicio": "Aducción de cadera",          "series": 3 }
+      ]
+    }
+  ]
+  

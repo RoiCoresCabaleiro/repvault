@@ -1,0 +1,9 @@
+# Ignora todos los virtual enviroments
+.venv*/
+
+# Ignorar todos los __pycache__/ y sus archivos compilados de python
+__pycache__/
+*.py[cod]
+
+# Ignora la configuracion de la clave secreta
+secretkey.json

@@ -1,0 +1,19 @@
+<h2>Historial</h2>
+
+{% if resultados %}
+    {% for r in resultados %}
+        <div style="margin-left: 20px; margin-bottom: 20px;">
+            <strong>{{ r.entrenamiento }}</strong> - <em>{{ r.fecha[:16] }}</em><br>
+            {% if r.observaciones %}
+                <em>{{ r.observaciones }}</em><br>
+            {% endif %}
+            <ul>
+            {% for s in r.series %}
+                <li>{{ s.peso }} kg x {{ s.reps }} reps</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No hay registros de este ejercicio.</p>
+{% endif %}

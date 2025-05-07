@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>Bienvenido a tu gestor de entrenamientos</h2>
+    {% if current_user.is_authenticated %}
+        <p>¡Hola, {{ current_user.nombre }}!</p>
+    {% else %}
+        <p>Inicia sesión o regístrate para comenzar.</p>
+    {% endif %}
+{% endblock %}
