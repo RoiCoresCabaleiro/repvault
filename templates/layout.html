@@ -74,6 +74,21 @@
             white-space: nowrap;
             z-index: 10;
         }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+        .checkbox-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        .custom-checkbox {
+            @apply h-5 w-5 border-2 border-gray-300 rounded cursor-pointer transition-colors;
+        }
+        .custom-checkbox:checked {
+            @apply bg-primary-600 border-primary-600;
+        }
     </style>
 </head>
 
@@ -175,23 +190,73 @@
             html.classList.toggle('dark');
             localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
-        
-        // Restaurar posición de scroll
-        document.addEventListener("DOMContentLoaded", function () {
-            const scroll = sessionStorage.getItem("scrollPos");
-            if (scroll !== null) {
-                window.scrollTo(0, parseInt(scroll));
-                sessionStorage.removeItem("scrollPos");
+    </script>
+    <script>
+        // Sistema de restauración de scroll mejorado + smooth scroll selectivo
+        document.addEventListener("DOMContentLoaded", function() {
+            const currentPath = window.location.pathname;
+            const scrollDataRaw = sessionStorage.getItem("scrollPosition");
+      
+            if (scrollDataRaw) {
+                try {
+                    const { path, position } = JSON.parse(scrollDataRaw);
+      
+                    if (path === currentPath && position > 0) {
+                        // Mostrar contenido antes de scrollear para evitar parpadeo
+                        document.body.classList.remove("scroll-restore-pending");
+      
+                        // Restauración instantánea tras render
+                        requestAnimationFrame(() => {
+                            window.scrollTo(0, position);
+                        });
+                    } else {
+                        document.body.classList.remove("scroll-restore-pending");
+                    }
+                } catch (e) {
+                    console.error("Error al restaurar posición de scroll:", e);
+                    document.body.classList.remove("scroll-restore-pending");
+                }
+                sessionStorage.removeItem("scrollPosition");
+            } else {
+                document.body.classList.remove("scroll-restore-pending");
             }
-            document.body.classList.remove("scroll-restore-pending");
-        });
+      
+            // Guardar posición antes de navegar con formularios o filtros
+            function saveScroll() {
+                if (window.scrollY > 0) {
+                    sessionStorage.setItem(
+                        "scrollPosition",
+                        JSON.stringify({
+                            path: window.location.pathname,
+                            position: window.scrollY
+                        })
+                    );
+                }
+            }
+      
+            document.querySelectorAll('form:not([target="_blank"]):not(.no-scroll-save)').forEach(form => form.addEventListener("submit", saveScroll));
+      
+            document.querySelectorAll('button[type="submit"][name="filtrar"]').forEach(btn => btn.addEventListener("click", saveScroll));
+      
+            // Smooth scroll solo para enlaces de día (href="#...") sin usar scroll-behavior global
+            document.querySelectorAll('a[href^="#"]').forEach(link => {
+                link.addEventListener("click", function(e) {
+                    const targetId = this.getAttribute("href").slice(1);
+                    const dest = document.getElementById(targetId);
+                    if (!dest) return;  // no es un enlace de día válido
         
-        const form = document.querySelector("form");
-        if (form) {
-            form.addEventListener("submit", () => {
-                sessionStorage.setItem("scrollPos", window.scrollY);
+                    e.preventDefault();
+                    // eliminamos cualquier posición previa para no interferir con restore
+                    sessionStorage.removeItem("scrollPosition");
+        
+                    // scroll suave al destino
+                    dest.scrollIntoView({ behavior: "smooth", block: "start" });
+        
+                    // actualizar el hash sin salto instantáneo
+                    history.replaceState(null, "", "#" + targetId);
+                });
             });
-        }
+        });
     </script>
     
     {% block scripts %}{% endblock %}

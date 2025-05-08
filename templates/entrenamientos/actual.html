@@ -98,7 +98,7 @@
                                             <td class="px-3 py-2 whitespace-nowrap">
                                                 <div class="flex items-center">
                                                     <input type="checkbox" id="hecha_{{ clave }}_{{ i }}" name="hecha_{{ clave }}_{{ i }}" {% if serie.hecha %}checked{% endif %}
-                                                        class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded transition-colors">
+                                                        class="custom-checkbox">
                                                 </div>
                                             </td>
                                         </tr>
@@ -182,36 +182,41 @@
         setInterval(actualizarCronometro, 1000);
     }
 </script>
-
 <script>
-    document.querySelectorAll("input[type=checkbox][name^='hecha_']").forEach(checkbox => {
-        checkbox.addEventListener("change", function () {
-            const clave = this.name.split("_")[1];
-            const i = this.name.split("_")[2];
-    
-            const peso = document.querySelector(`input[name='peso_${clave}_${i}']`);
-            const reps = document.querySelector(`input[name='reps_${clave}_${i}']`);
-    
-            // Ya existe el mensaje de error?
-            const existing = document.getElementById(`error_${clave}_${i}`);
-            if (existing) existing.remove();
-    
-            // Verificar que no estén vacíos
+    document.querySelectorAll(".custom-checkbox").forEach(cb => {
+        cb.addEventListener("change", function() {
+            const [ , clave, i ] = this.name.split("_");
+  
+            const peso = document.querySelector(`[name='peso_${clave}_${i}']`);
+            const reps = document.querySelector(`[name='reps_${clave}_${i}']`);
+  
             if (!peso.value.trim() || !reps.value.trim()) {
-                // Cancelar marcado
                 this.checked = false;
     
-                // Crear mensaje de error
-                const msg = document.createElement("p");
-                msg.id = `error_${clave}_${i}`;
-                msg.style.color = "red";
-                msg.style.fontSize = "0.85em";
-                msg.textContent = "Completa peso y repeticiones antes de marcar como hecha.";
+                this.classList.add("checkbox-shake");
     
-                // Insertarlo debajo del checkbox
-                this.parentElement.appendChild(msg);
+                // Resaltar campos vacíos
+                if (!peso.value.trim()) {
+                    peso.classList.add('border-red-500', 'dark:border-red-500');
+                    peso.focus();
+                }
+                    
+                if (!reps.value.trim()) {
+                    reps.classList.add('border-red-500', 'dark:border-red-500');
+                    if (peso.value.trim()) {
+                        reps.focus();
+                    }
+                }
+                    
+                // Quitar animación y resaltado después de un tiempo
+                setTimeout(() => {
+                    this.classList.remove('checkbox-shake');
+                    peso.classList.remove('border-red-500', 'dark:border-red-500');
+                    reps.classList.remove('border-red-500', 'dark:border-red-500');
+                }, 1500);
             }
         });
     });
 </script>
+  
 {% endblock %}
