@@ -2,7 +2,7 @@
     
 {% if resultados %}
     {% for r in resultados %}
-        <div class="mb-6 last:mb-0">
+        <div class="mb-6 last:mb-0 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
             <div class="flex flex-wrap justify-between items-start mb-2">
                 <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ r.entrenamiento }}</h4>
                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ r.fecha[:16] }}</span>

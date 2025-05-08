@@ -54,45 +54,90 @@
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 150ms;
         }
+        
+        /* Tooltip para iconos */
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
+        }
     </style>
 </head>
 
 <body class="scroll-restore-pending min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
-    {# Header con navegación #}
-    <header class="bg-white dark:bg-gray-800 shadow-sm transition-colors">
+    {# Header con navegación - Fixed/Sticky #}
+    <header class="fixed top-0 left-0 right-0 z-10 bg-white dark:bg-gray-800 shadow-md transition-colors">
         <div class="container mx-auto px-4 py-3">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center justify-between mb-2 sm:mb-0">
                     <a href="{{ url_for('home') }}" class="text-2xl font-bold text-primary-600 dark:text-primary-400 font-heading">
                         RepVault
                     </a>
-                    <button id="mobile-menu-button" class="md:hidden rounded-md p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
                 </div>
                 
-                <nav id="mobile-menu" class="hidden md:flex flex-col md:flex-row md:items-center mt-3 md:mt-0 space-y-2 md:space-y-0 md:space-x-4">
-                    <a href="{{ url_for('home') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Inicio</a>
+                <nav class="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-4">
+                    <a href="{{ url_for('home') }}" class="tooltip flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Inicio">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span class="hidden sm:inline ml-1 text-sm font-medium">Inicio</span>
+                    </a>
                     
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('ejercicios.lista') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Ejercicios</a>
-                        <a href="{{ url_for('plantillas.lista') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Rutinas</a>
-                        <a href="{{ url_for('entrenamientos.historial') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Historial</a>
+                        <a href="{{ url_for('ejercicios.lista') }}" class="tooltip flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Ejercicios">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 500.043 500.043" fill="currentColor">
+                                <path d="M114.568,108.812c-15.854,0-28.716,14.544-28.716,32.474c0,54.354,0.01,163.137,0.02,217.471c0,17.93,12.842,32.473,28.697,32.473s28.716-14.553,28.716-32.473c0-21.316,0-51.045,0-82.545c16.553,0,164.713,0,208.874,0c0,31.51,0,61.229,0,82.555c0,17.92,12.861,32.463,28.717,32.463c15.854,0,28.697-14.553,28.697-32.473c0-54.354,0-163.137,0-217.471c0-17.939-12.844-32.474-28.697-32.474c-15.855,0-28.717,14.525-28.717,32.474c0,21.315,0,51.035,0,82.543c-44.178,0-192.321,0-208.874,0c0-31.508,0-61.229,0-82.553C143.285,123.338,130.433,108.812,114.568,108.812z"/>
+                                <path d="M447.602,152.188c-0.938,0-1.865,0-2.811,0c-11.945,0-21.641,9.668-21.641,21.63c0,37.647,0,114.76,0,152.406c0,11.953,9.695,21.65,21.648,21.65c0.938,0,1.885,0,2.812,0c11.953,0,21.648-9.668,21.648-21.631c0-37.637,0-114.759-0.008-152.407C469.26,161.875,459.555,152.188,447.602,152.188z"/>
+                                <path d="M52.116,152.188c-0.937,0-1.884,0-2.821,0c-11.953,0-21.64,9.668-21.64,21.63c0,37.647,0,114.76,0,152.406c0,11.963,9.687,21.65,21.64,21.65c0.937,0,1.884,0,2.811,0c11.953,0,21.64-9.668,21.64-21.631c0-37.637,0-114.759,0-152.407C73.756,161.875,64.069,152.188,52.116,152.188z"/>
+                            </svg>
+                            <span class="hidden sm:inline ml-1 text-sm font-medium">Ejercicios</span>
+                        </a>
                         
-                        <form action="{{ url_for('auth.logout') }}" method="GET" class="md:ml-2">
-                            <button type="submit" class="w-full md:w-auto px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-sm font-medium transition-colors">
-                                Cerrar sesión
+                        <a href="{{ url_for('plantillas.lista') }}" class="tooltip flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Rutinas">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <span class="hidden sm:inline ml-1 text-sm font-medium">Rutinas</span>
+                        </a>
+                        
+                        <a href="{{ url_for('entrenamientos.historial') }}" class="tooltip flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Historial">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="hidden sm:inline ml-1 text-sm font-medium">Historial</span>
+                        </a>
+                        
+                        <form action="{{ url_for('auth.logout') }}" method="GET">
+                            <button type="submit" class="tooltip flex items-center justify-center p-2 rounded-md bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-700 dark:text-red-300 transition-colors" data-tooltip="Cerrar sesión">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                <span class="hidden sm:inline ml-1 text-sm font-medium">Cerrar sesión</span>
                             </button>
                         </form>
                     {% else %}
-                        <a href="{{ url_for('auth.login') }}" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium transition-colors">
-                            Iniciar sesión
+                        <a href="{{ url_for('auth.login') }}" class="tooltip flex items-center justify-center p-2 rounded-md bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/30 text-primary-700 dark:text-primary-300 transition-colors" data-tooltip="Iniciar sesión">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                            <span class="hidden sm:inline ml-1 text-sm font-medium">Iniciar sesión</span>
                         </a>
                     {% endif %}
                     
-                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors">
+                    <button id="theme-toggle" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
@@ -105,17 +150,12 @@
         </div>
     </header>
 
+    <!-- Espaciador para compensar el header fijo -->
+    <div class="h-24 sm:h-20"></div>
+
     <main class="container mx-auto px-4 py-6 pb-16">
         {% block content %}{% endblock %}
     </main>
-    
-    <!-- FOOTER
-    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 transition-colors">
-        <div class="container mx-auto px-4 text-center text-sm text-gray-600 dark:text-gray-400">
-            &copy; 2023 RepVault. Todos los derechos reservados.
-        </div>
-    </footer>
-    -->
 
     {# Scripts #}
     <script>
@@ -134,14 +174,6 @@
         themeToggle.addEventListener('click', () => {
             html.classList.toggle('dark');
             localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
-        });
-        
-        // Menú móvil
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
         });
         
         // Restaurar posición de scroll
