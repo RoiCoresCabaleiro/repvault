@@ -15,14 +15,14 @@
     {% if plantillas %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for clave, plantilla in plantillas %}
-                <a href="{{ url_for('plantillas.ver', clave=clave) }}" class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg shadow-md p-5 border border-gray-200 dark:border-gray-700 transition-colors">
+                <a href="{{ url_for('plantillas.ver', clave=clave) }}" class="flex flex-col h-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg shadow-md p-5 border border-gray-200 dark:border-gray-700 transition-colors">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ plantilla.nombre }}</h3>
                     
                     {% if plantilla.observaciones %}
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">{{ plantilla.observaciones }}</p>
                     {% endif %}
                     
-                    <div class="flex items-center justify-between mt-2">
+                    <div class="flex items-center justify-between mt-auto">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300">
                             {{ plantilla.ejercicios|length }} ejercicios
                         </span>
