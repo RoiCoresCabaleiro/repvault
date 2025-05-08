@@ -1,112 +1,125 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<div class="max-w-6xl mx-auto">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-heading">Historial de entrenamientos</h2>
 
-<h2>Historial de entrenamientos</h2>
-
-<div style="display: flex; justify-content: space-between; gap: 40px;">
-    <!-- 🟩 COLUMNA IZQUIERDA: Historial agrupado -->
-    <div style="flex: 2;">
-        {% if historial %}
-            {% for fecha, entrenamientos in historial.items() %}
-                <h3 id="{{ fecha }}">{{ fecha }}</h3>
-                {% for ent in entrenamientos %}
-                    <div style="margin-left: 20px; margin-bottom: 20px;">
-                        <strong>{{ ent.nombre }}</strong> -
-                        <em>
-                        {% if ent.fecha and ent.duracion is not none %}
-                            {{ ent.fecha.split(" ")[1][:5] }} ({{ ent.duracion // 60 ~ 'h ' if ent.duracion >= 60 else '' }}{{ ent.duracion % 60 }}m)
-                        {% endif %}
-                        </em><br>
-                        {% if ent.observaciones %}
-                            <em>{{ ent.observaciones }}</em><br>
-                        {% endif %}
-                        <ul>
-                        {% for clave, datos in ent.ejercicios.items() %}
-                            {% if datos is mapping %}
-                                <!-- Ejercicio eliminado con nombre persistente -->
-                                <li>
-                                    <strong>{{ datos.nombre }} (eliminado)</strong>
-                                    <ul>
-                                    {% for s in datos.series %}
-                                        <li>{{ s.peso }} kg x {{ s.reps }} reps</li>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- COLUMNA IZQUIERDA: Historial agrupado -->
+        <div class="lg:col-span-2">
+            {% if historial %}
+                {% for fecha, entrenamientos in historial.items() %}
+                    <div id="{{ fecha }}" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 font-heading">{{ fecha }}</h3>
+                        
+                        {% for ent in entrenamientos %}
+                            <div class="mb-6 last:mb-0 {% if not loop.last %}border-b border-gray-200 dark:border-gray-700 pb-6{% endif %}">
+                                <div class="flex flex-wrap justify-between items-start mb-2">
+                                    <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ ent.nombre }}</h4>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ ent.fecha.split(" ")[1][:5] }}
+                                        {% if ent.fecha and ent.duracion is not none %}
+                                            ({{ ent.duracion // 60 ~ 'h ' if ent.duracion >= 60 else '' }}{{ ent.duracion % 60 }}m)
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if ent.observaciones %}
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 italic mb-3">{{ ent.observaciones }}</p>
+                                {% endif %}
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {% for clave, datos in ent.ejercicios.items() %}
+                                        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                                            {% if datos is mapping %}
+                                                <!-- Ejercicio eliminado con nombre persistente -->
+                                                <h5 class="font-medium text-gray-900 dark:text-white mb-2">{{ datos.nombre }} <span class="text-xs text-gray-500 dark:text-gray-400">(eliminado)</span></h5>
+                                                <ul class="space-y-1 pl-5 list-disc text-sm text-gray-700 dark:text-gray-300">
+                                                {% for s in datos.series %}
+                                                    <li>{{ s.peso }} kg x {{ s.reps }} reps</li>
+                                                {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <!-- Ejercicio aún activo -->
+                                                <h5 class="font-medium text-gray-900 dark:text-white mb-2">{{ ejercicios_nombres.get(clave, 'Ejercicio desconocido') }}</h5>
+                                                <ul class="space-y-1 pl-5 list-disc text-sm text-gray-700 dark:text-gray-300">
+                                                {% for s in datos %}
+                                                    <li>{{ s.peso }} kg x {{ s.reps }} reps</li>
+                                                {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
                                     {% endfor %}
-                                    </ul>
-                                </li>
-                            {% else %}
-                                <!-- Ejercicio aún activo -->
-                                <li>
-                                    <strong>{{ ejercicios_nombres.get(clave, 'Ejercicio desconocido') }}</strong>
-                                    <ul>
-                                    {% for s in datos %}
-                                        <li>{{ s.peso }} kg x {{ s.reps }} reps</li>
-                                    {% endfor %}
-                                    </ul>
-                                </li>
-                            {% endif %}
+                                </div>
+                            </div>
                         {% endfor %}
-                        </ul>
                     </div>
                 {% endfor %}
-            {% endfor %}
-        {% else %}
-            <p>No hay entrenamientos guardados todavía.</p>
-        {% endif %}
-    </div>
+            {% else %}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center transition-colors">
+                    <p class="text-gray-600 dark:text-gray-400">No hay entrenamientos guardados todavía.</p>
+                </div>
+            {% endif %}
+        </div>
 
-    <!-- 🟦 COLUMNA DERECHA: Calendario -->
-    <div style="flex: 2.5; max-width: 500px; margin-right: 40px; position: sticky; top: 100px; align-self: flex-start; padding: 10px; border: 2px solid #ccc; background: white;">
-        <h4 style="position: sticky; top: 0; background: white; display: flex; align-items: center; justify-content: space-between;">
-            
-            <a href="{{ url_for('entrenamientos.historial', mes=mes-1 if mes > 1 else 12, año=año if mes > 1 else año-1) }}"
-               style="text-decoration: none; font-size: 1.2em; padding: 0 10px;"
-               onclick="sessionStorage.setItem('scrollPos', window.scrollY)">◀</a>
-            
-            <span style="flex-grow: 1; text-align: center;">{{ mes_nombre }} {{ año }}</span>
-            
-            <a href="{{ url_for('entrenamientos.historial', mes=mes+1 if mes < 12 else 1, año=año if mes < 12 else año+1) }}"
-               style="text-decoration: none; font-size: 1.2em; padding: 0 10px;"
-               onclick="sessionStorage.setItem('scrollPos', window.scrollY)">▶</a>
-        </h4>
+        <!-- COLUMNA DERECHA: Calendario -->
+        <div class="lg:col-span-1">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sticky top-24 transition-colors">
+                <div class="flex items-center justify-between mb-4">
+                    <a href="{{ url_for('entrenamientos.historial', mes=mes-1 if mes > 1 else 12, año=año if mes > 1 else año-1) }}"
+                       class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors"
+                       onclick="sessionStorage.setItem('scrollPos', window.scrollY)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </a>
+                    
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white text-center">{{ mes_nombre }} {{ año }}</h3>
+                    
+                    <a href="{{ url_for('entrenamientos.historial', mes=mes+1 if mes < 12 else 1, año=año if mes < 12 else año+1) }}"
+                       class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors"
+                       onclick="sessionStorage.setItem('scrollPos', window.scrollY)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
 
-        <table style="width: 100%; border-collapse: collapse; text-align: center;">
-            <thead>
-                <tr>
-                    {% for letra in ["L", "M", "X", "J", "V", "S", "D"] %}
-                        <th style="padding: 4px;">{{ letra }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for semana in calendario_filas %}
-                    <tr>
-                        {% for dia in semana %}
-                            {% if dia %}
-                                {% if dia.activo %}
-                                    <td>
-                                        <a href="#{{ "%02d/%02d/%d" % (dia.numero, mes, año) }}"
-                                           style="display: inline-block; width: 28px; height: 28px;
-                                                  border-radius: 50%; background-color: lightgreen;
-                                                  line-height: 28px; text-decoration: none; color: black;">
-                                            {{ dia.numero }}
-                                        </a>
-                                    </td>
-                                {% else %}
-                                    <td>
-                                        <div style="display: inline-block; width: 28px; height: 28px;
-                                                    color: #aaa; line-height: 28px;">
-                                            {{ dia.numero }}
-                                        </div>
-                                    </td>
-                                {% endif %}
-                            {% else %}
-                                <td></td>
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr>
+                                {% for letra in ["L", "M", "X", "J", "V", "S", "D"] %}
+                                    <th class="text-center text-sm font-medium text-gray-600 dark:text-gray-400 py-2">{{ letra }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for semana in calendario_filas %}
+                                <tr>
+                                    {% for dia in semana %}
+                                        <td class="text-center py-2">
+                                            {% if dia %}
+                                                {% if dia.activo %}
+                                                    <a href="#{{ "%02d/%02d/%d" % (dia.numero, mes, año) }}"
+                                                       class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300 font-medium hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors">
+                                                        {{ dia.numero }}
+                                                    </a>
+                                                {% else %}
+                                                    <span class="inline-flex items-center justify-center w-8 h-8 text-gray-500 dark:text-gray-400">
+                                                        {{ dia.numero }}
+                                                    </span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

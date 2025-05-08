@@ -1,13 +1,18 @@
-<h2>Historial</h2>
-
+<h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 font-heading">Historial</h3>
+    
 {% if resultados %}
     {% for r in resultados %}
-        <div style="margin-left: 20px; margin-bottom: 20px;">
-            <strong>{{ r.entrenamiento }}</strong> - <em>{{ r.fecha[:16] }}</em><br>
+        <div class="mb-6 last:mb-0">
+            <div class="flex flex-wrap justify-between items-start mb-2">
+                <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ r.entrenamiento }}</h4>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ r.fecha[:16] }}</span>
+            </div>
+            
             {% if r.observaciones %}
-                <em>{{ r.observaciones }}</em><br>
+                <p class="text-sm text-gray-600 dark:text-gray-400 italic mb-2">{{ r.observaciones }}</p>
             {% endif %}
-            <ul>
+                
+            <ul class="space-y-1 pl-5 list-disc text-gray-700 dark:text-gray-300">
             {% for s in r.series %}
                 <li>{{ s.peso }} kg x {{ s.reps }} reps</li>
             {% endfor %}
@@ -15,5 +20,5 @@
         </div>
     {% endfor %}
 {% else %}
-    <p>No hay registros de este ejercicio.</p>
+    <p class="text-gray-600 dark:text-gray-400">No hay registros de este ejercicio.</p>
 {% endif %}

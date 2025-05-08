@@ -1,47 +1,162 @@
-{# templates/plantillas/gestion.html #}
-
 {% extends "layout.html" %}
 {% import "shared/ejercicios_filtro.html" as filtro %}
 
 {% block content %}
-    <h2>{{ "Editar plantilla" if is_edit else "Crear plantilla" }}</h2>
+<div class="max-w-6xl mx-auto">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-heading">
+        {{ "Editar rutina" if is_edit else "Crear rutina" }}
+    </h2>
 
     <form method="POST">
-        <div style="display: flex; justify-content: space-between; gap: 40px;">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- COLUMNA IZQUIERDA: Datos de la plantilla -->
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
+                    <div class="space-y-6">
+                        <div>
+                            <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
+                            <input type="text" id="nombre" name="nombre" value="{{ plantilla.nombre }}" required
+                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                        </div>
 
-            <!-- 🟩 COLUMNA IZQUIERDA: Datos de la plantilla -->
-            <div style="flex: 1;">
-                <label for="nombre">Nombre:</label><br>
-                <input type="text" id="nombre" name="nombre" value="{{ plantilla.nombre }}">
-                <br><br>
+                        <div>
+                            <label for="observaciones" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Observaciones</label>
+                            <textarea id="observaciones" name="observaciones" rows="3"
+                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">{{ plantilla.observaciones }}</textarea>
+                        </div>
 
-                <label for="observaciones">Observaciones:</label><br>
-                <textarea id="observaciones" name="observaciones" rows="3" cols="40">{{ plantilla.observaciones }}</textarea>
-                <br><br>
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Ejercicios de la rutina</h3>
+                            
+                            {% if ejercicios_seleccionados %}
+                                <ul class="space-y-3">
+                                    {% for soid, ej in ejercicios_seleccionados %}
+                                        <li class="flex flex-wrap items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                            <div class="flex-grow">
+                                                <span class="font-medium text-gray-900 dark:text-white">{{ ej.nombre }}</span>
+                                                <div class="flex mt-1 space-x-2">
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300">
+                                                        {{ ej.grupo_muscular }}
+                                                    </span>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
+                                                        {{ ej.equipamiento }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="flex items-center gap-2">
+                                                <label class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Series:</label>
+                                                <input type="number" name="series_{{ loop.index0 }}" value="{{ plantilla.ejercicios[soid] }}" min="1" 
+                                                    class="w-16 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                                            </div>
+                                            
+                                            <div class="flex items-center gap-1 ml-auto">
+                                                <button type="submit" name="mover" value="subir-{{ loop.index0 }}" 
+                                                    class="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                                    </svg>
+                                                </button>
+                                                <button type="submit" name="mover" value="bajar-{{ loop.index0 }}" 
+                                                    class="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </button>
+                                                <button type="submit" name="quitar" value="{{ soid }}" 
+                                                    class="p-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus:outline-none">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">No hay ejercicios seleccionados. Añade ejercicios desde el panel derecho.</p>
+                            {% endif %}
+                        </div>
 
-                <h3>Ejercicios de la plantilla:</h3>
-                {% for soid, ej in ejercicios_seleccionados %}
-                <div style="margin-bottom: 10px;">
-                    <strong>{{ ej.nombre }}</strong> -
-                    Series:
-                    <input type="number" name="series_{{ loop.index0 }}" value="{{ plantilla.ejercicios[soid] }}" min="1" style="width: 50px;">
-                    <button type="submit" name="mover" value="subir-{{ loop.index0 }}">↑</button>
-                    <button type="submit" name="mover" value="bajar-{{ loop.index0 }}">↓</button>
-                    <button type="submit" name="quitar" value="{{ soid }}">Eliminar</button>
+                        <div>
+                            <button type="submit" name="{{ 'guardar_cambios' if is_edit else 'guardar' }}"
+                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                                {{ 'Guardar cambios' if is_edit else 'Guardar rutina' }}
+                            </button>
+                            
+                            {% if error %}
+                                <div class="mt-4 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 px-4 py-3 rounded-md text-sm">
+                                    {{ error }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                {% endfor %}
-
-                <br>
-                <button type="submit" name="{{ 'guardar_cambios' if is_edit else 'guardar' }}">
-                    {{ 'Guardar cambios' if is_edit else 'Guardar plantilla' }}
-                </button>
-                {% if error %}
-                <p style="color:red; margin-top:10px;">{{ error }}</p>
-                {% endif %}
             </div>
 
-            <!-- 🟦 COLUMNA DERECHA: Filtros y añadir ejercicios -->
-            {{ filtro.ejercicios_filtro( ejercicios_disponibles, grupos_validos, equipamientos_validos, grupo_filtro, equipamiento_filtro) }}
+            <!-- COLUMNA DERECHA: Filtros y añadir ejercicios -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Añadir ejercicios</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="grupo_muscular" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Grupo muscular</label>
+                            <select id="grupo_muscular" name="grupo_muscular"
+                                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                                <option value="">-- Todos --</option>
+                                {% for g in grupos_validos %}
+                                    <option value="{{ g }}"{% if g == grupo_filtro %} selected{% endif %}>{{ g }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="equipamiento" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Equipamiento</label>
+                            <select id="equipamiento" name="equipamiento"
+                                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                                <option value="">-- Todos --</option>
+                                {% for e in equipamientos_validos %}
+                                    <option value="{{ e }}"{% if e == equipamiento_filtro %} selected{% endif %}>{{ e }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <button type="submit" name="filtrar"
+                                class="w-full flex justify-center py-2 px-4 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-sm font-medium transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                </svg>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 max-h-96 overflow-y-auto pr-2">
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Ejercicios disponibles</h4>
+                        
+                        {% if ejercicios_disponibles %}
+                            <ul class="space-y-2">
+                                {% for soid, ej in ejercicios_disponibles %}
+                                    <li class="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-md">
+                                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ ej.nombre }}</span>
+                                        <button type="submit" name="agregar" value="{{ soid }}" 
+                                            class="ml-2 p-1 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 focus:outline-none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                            </svg>
+                                        </button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">No hay ejercicios disponibles con los filtros seleccionados.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
+</div>
 {% endblock %}

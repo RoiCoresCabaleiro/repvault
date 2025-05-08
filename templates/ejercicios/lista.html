@@ -1,43 +1,73 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Mis ejercicios</h2>
+<div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-heading mb-4 md:mb-0">Mis ejercicios</h2>
+        
+        <a href="{{ url_for('ejercicios.gestionar') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Crear nuevo ejercicio
+        </a>
+    </div>
 
-<a href="{{ url_for('ejercicios.gestionar') }}">Crear nuevo ejercicio</a><br><br>
+    {# Filtros #}
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6 transition-colors">
+        <form method="get" class="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div class="flex-1">
+                <label for="grupo_muscular" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Grupo muscular</label>
+                <select id="grupo_muscular" name="grupo_muscular" class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                    <option value="">-- Todos --</option>
+                    {% for grupo in grupos_validos %}
+                        <option value="{{ grupo }}" {% if grupo == grupo_filtro %}selected{% endif %}>{{ grupo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="flex-1">
+                <label for="equipamiento" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Equipamiento</label>
+                <select id="equipamiento" name="equipamiento" class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                    <option value="">-- Todos --</option>
+                    {% for eq in equipamientos_validos %}
+                        <option value="{{ eq }}" {% if eq == equipamiento_filtro %}selected{% endif %}>{{ eq }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="flex items-end">
+                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-sm font-medium transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
 
-<!-- Filtros -->
-<form method="get" style="margin-bottom: 20px;">
-    <label>Grupo muscular:</label>
-    <select name="grupo_muscular">
-        <option value="">-- Todos --</option>
-        {% for grupo in grupos_validos %}
-            <option value="{{ grupo }}" {% if grupo == grupo_filtro %}selected{% endif %}>{{ grupo }}</option>
-        {% endfor %}
-    </select>
-
-    <label style="margin-left: 20px;">Equipamiento:</label>
-    <select name="equipamiento">
-        <option value="">-- Todos --</option>
-        {% for eq in equipamientos_validos %}
-            <option value="{{ eq }}" {% if eq == equipamiento_filtro %}selected{% endif %}>{{ eq }}</option>
-        {% endfor %}
-    </select>
-
-    <button type="submit" style="margin-left: 20px;">Filtrar</button>
-</form>
-
-<!-- Lista de ejercicios -->
-{% if ejercicios %}
-    <ul>
-    {% for clave, ej in ejercicios %}
-        <li style="margin-bottom: 15px;">
-            <a href="{{ url_for('ejercicios.ver', clave=clave) }}">{{ ej.nombre }}</a><br>
-            <small><em>{{ ej.grupo_muscular }} | {{ ej.equipamiento }}</em></small>
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No se encontraron ejercicios con esos filtros.</p>
-{% endif %}
+    {# Lista de ejercicios #}
+    {% if ejercicios %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for clave, ej in ejercicios %}
+                <a href="{{ url_for('ejercicios.ver', clave=clave) }}" class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg shadow-md p-4 border border-gray-200 dark:border-gray-700 transition-colors">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ ej.nombre }}</h3>
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300 mr-2">
+                            {{ ej.grupo_muscular }}
+                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
+                            {{ ej.equipamiento }}
+                        </span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center transition-colors">
+            <p class="text-gray-600 dark:text-gray-400">No se encontraron ejercicios con esos filtros.</p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
-

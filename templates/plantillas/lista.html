@@ -1,24 +1,48 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h2>Mis plantillas de entrenamiento</h2>
-
-    <a href="{{ url_for('plantillas.gestionar') }}">Crear nueva plantilla</a><br><br>
+<div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-heading mb-4 md:mb-0">Mis rutinas de entrenamiento</h2>
+        
+        <a href="{{ url_for('plantillas.gestionar') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Crear nueva rutina
+        </a>
+    </div>
 
     {% if plantillas %}
-        <ul>
-        {% for clave, plantilla in plantillas %}
-            <li>
-                <a href="{{ url_for('plantillas.ver', clave=clave) }}">
-                    <strong>{{ plantilla.nombre }}</strong>
-                </a><br>
-                {% if plantilla.observaciones %}
-                    <em>{{ plantilla.observaciones }}</em><br>
-                {% endif %}
-                <p>{{ plantilla.ejercicios|length }} ejercicios</p>
-            </li>
-        {% endfor %}
-        </ul>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for clave, plantilla in plantillas %}
+                <a href="{{ url_for('plantillas.ver', clave=clave) }}" class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg shadow-md p-5 border border-gray-200 dark:border-gray-700 transition-colors">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ plantilla.nombre }}</h3>
+                    
+                    {% if plantilla.observaciones %}
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">{{ plantilla.observaciones }}</p>
+                    {% endif %}
+                    
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300">
+                            {{ plantilla.ejercicios|length }} ejercicios
+                        </span>
+                        
+                        {% if plantilla.ultima_vez %}
+                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                Último: {{ plantilla.ultima_vez.split(" ")[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
     {% else %}
-        <p>No tienes ninguna plantilla aún.</p>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center transition-colors">
+            <p class="text-gray-600 dark:text-gray-400 mb-4">No tienes ninguna rutina aún.</p>
+            <a href="{{ url_for('plantillas.gestionar') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium transition-colors">
+                Crear tu primera rutina
+            </a>
+        </div>
     {% endif %}
+</div>
 {% endblock %}

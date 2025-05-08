@@ -1,129 +1,173 @@
-{# /templates/ejercicios/ver.html #}
-
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 style="display: flex; align-items: center; gap: 10px;">
-    {{ ejercicio.nombre }}
-    <form method="GET" action="{{ url_for('ejercicios.gestionar', clave=clave) }}" style="display:inline;">
-        <button type="submit">Editar</button>
-    </form>
-    <form method="POST" action="{{ url_for('ejercicios.eliminar', clave=clave) }}" style="display:inline;"
-        onsubmit="return confirm('¿Estás seguro de que quieres eliminar este ejercicio? \n Se perderán sus estadisticas y no podrá usarse en futuros entrenamientos.');">
-        <button type="submit">Eliminar</button>
-    </form>
-</h2>
-
-{% if ejercicio.grupo_muscular and ejercicio.equipamiento %}
-    <p><em>{{ ejercicio.grupo_muscular }} | {{ ejercicio.equipamiento }}</em></p>
-{% endif %}
-{% if ejercicio.descripcion %}
-    <p><strong>Descripción:</strong> {{ ejercicio.descripcion }}</p>
-{% endif %}
-
-<div style="display: flex; align-items: flex-start; gap: 40px;">
-    <!-- 🟩 IZQUIERDA: Historial -->
-    <div style="flex: 2;">
-        {% include "ejercicios/historial.html" %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-heading mb-4 md:mb-0">{{ ejercicio.nombre }}</h2>
+        
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ url_for('ejercicios.gestionar', clave=clave) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-sm font-medium transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Editar
+            </a>
+            
+            <form method="POST" action="{{ url_for('ejercicios.eliminar', clave=clave) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este ejercicio? \n Se perderán sus estadisticas y no podrá usarse en futuros entrenamientos.');">
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-md text-sm font-medium transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Eliminar
+                </button>
+            </form>
+        </div>
     </div>
 
-    <!-- 🟦 DERECHA: Estadísticas -->
-    <div style="flex: 2.5; max-width: 500px; margin-right: 40px; position: sticky; top: 100px; padding: 10px; border: 1px solid #ddd; background: #fafafa; display: flex; flex-direction: column; gap: 16px; height: auto;">
-        <h3 style="margin: 0 0 8px;">Estadísticas</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6 transition-colors">
+        {% if ejercicio.grupo_muscular and ejercicio.equipamiento %}
+            <div class="flex flex-wrap gap-2 mb-3">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300">
+                    {{ ejercicio.grupo_muscular }}
+                </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
+                    {{ ejercicio.equipamiento }}
+                </span>
+            </div>
+        {% endif %}
+        
+        {% if ejercicio.descripcion %}
+            <p class="text-gray-700 dark:text-gray-300">
+                <span class="font-medium">Descripción:</span> {{ ejercicio.descripcion }}
+            </p>
+        {% endif %}
+    </div>
 
-        <!-- Peso máximo -->
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div><strong>Peso máx. :</strong> {{ stats.max_weight.value }} kg</div>
-            <div>
-                {{ stats.max_weight.peso }} kg x {{ stats.max_weight.reps }} reps
-                ({{ stats.max_weight.fecha.split(" ")[0] }})
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Historial -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
+            {% include "ejercicios/historial.html" %}
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 font-heading">Estadísticas</h3>
+            
+            <div class="space-y-4">
+                <!-- Peso máximo -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <div class="font-medium text-gray-900 dark:text-white">Peso máx.:</div>
+                    <div class="flex flex-col sm:items-end">
+                        <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.max_weight.value }} kg</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ stats.max_weight.peso }} kg x {{ stats.max_weight.reps }} reps
+                            ({{ stats.max_weight.fecha.split(" ")[0] }})
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Volumen máximo -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <div class="font-medium text-gray-900 dark:text-white">Vol. máx.:</div>
+                    <div class="flex flex-col sm:items-end">
+                        <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.max_volume.value }} kg</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ stats.max_volume.peso }} kg x {{ stats.max_volume.reps }} reps
+                            ({{ stats.max_volume.fecha.split(" ")[0] }})
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mejor 1RM estimado -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <div class="font-medium text-gray-900 dark:text-white">1RM est.:</div>
+                    <div class="flex flex-col sm:items-end">
+                        <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.best_1rm.estimate|round(1) }} kg</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ stats.best_1rm.peso }} kg x {{ stats.best_1rm.reps }} reps
+                            ({{ stats.best_1rm.fecha.split(" ")[0] }})
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-200 dark:border-gray-700">
+
+                <!-- Totales -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Reps totales</div>
+                        <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ stats.total_reps }}</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Vol. acumulado</div>
+                        <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ stats.total_volume }} kg</div>
+                    </div>
+                </div>
+
+                <!-- Gráfico 1RM en el tiempo -->
+                <div class="mt-4">
+                    <canvas id="chart-1rm" height="200" class="w-full"></canvas>
+                </div>
             </div>
         </div>
-
-        <!-- Volumen máximo -->
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div><strong>Vol. máx. :</strong> {{ stats.max_volume.value }} kg</div>
-            <div>
-                {{ stats.max_volume.peso }} kg x {{ stats.max_volume.reps }} reps
-                ({{ stats.max_volume.fecha.split(" ")[0] }})
-            </div>
-        </div>
-
-        <!-- Mejor 1RM estimado -->
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div><strong>1RM est. :</strong> {{ stats.best_1rm.estimate|round(1) }} kg</div>
-            <div>
-                {{ stats.best_1rm.peso }} kg x {{ stats.best_1rm.reps }} reps
-                ({{ stats.best_1rm.fecha.split(" ")[0] }})
-            </div>
-        </div>
-
-        <hr style="margin: 0; border: none; border-top: 1px solid #ddd;">
-
-        <!-- Totales -->
-        <div style="display: flex; justify-content: space-between;">
-            <div><strong>Reps totales:</strong></div>
-            <div>{{ stats.total_reps }}</div>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-            <div><strong>Vol. acumulado:</strong></div>
-            <div>{{ stats.total_volume }} kg</div>
-        </div>
-
-        <!-- Gráfico 1RM en el tiempo -->
-        <canvas id="chart-1rm" height="150" style="width: 100%;"></canvas>
-
-        <!-- 1) Contenedor JSON (solo JSON, no JS) -->
-        <script type="application/json" id="chart-data">
-            {{ {"labels": rm_labels, "values": rm_values} | tojson }}
-        </script>
-
-        <!-- 2) Chart.js -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            // Obtener el JSON y construir el gráfico
-            const raw = document.getElementById('chart-data').textContent;
-            const chartData = JSON.parse(raw);
-
-            // Reformatear cada "DD/MM/YYYY" a "D mmm"
-            const formattedLabels = chartData.labels.map(label => {
-                const [d, m, y] = label.split('/');
-                const date = new Date(`${y}-${m}-${d}`);
-                return date.toLocaleDateString('es-ES', {
-                    day:   'numeric',
-                    month: 'short'
-                });
-            });
-
-            const ctx = document.getElementById('chart-1rm').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                labels: formattedLabels,
-                datasets: [{
-                    label: '1RM estimado',
-                    data: chartData.values,
-                    fill: false,
-                    tension: 0.1
-                }]
-                },
-                options: {
-                scales: {
-                    x: {
-                    display: true,
-                    title: { display: true, text: 'Fecha' }
-                    },
-                    y: {
-                    beginAtZero: true,
-                    title: { display: true, text: '1RM (kg)' }
-                    }
-                },
-                plugins: {
-                    legend: { display: false }
-                }
-                }
-            });
-        </script>
     </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- 1) Contenedor JSON (solo JSON, no JS) -->
+<script type="application/json" id="chart-data">
+    {{ {"labels": rm_labels, "values": rm_values} | tojson }}
+</script>
+
+<!-- 2) Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Obtener el JSON y construir el gráfico
+    const raw = document.getElementById('chart-data').textContent;
+    const chartData = JSON.parse(raw);
+
+    // Reformatear cada "DD/MM/YYYY" a "D mmm"
+    const formattedLabels = chartData.labels.map(label => {
+        const [d, m, y] = label.split('/');
+        const date = new Date(`${y}-${m}-${d}`);
+        return date.toLocaleDateString('es-ES', {
+            day:   'numeric',
+            month: 'short'
+        });
+    });
+
+    const ctx = document.getElementById('chart-1rm').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: formattedLabels,
+            datasets: [{
+                label: '1RM estimado',
+                data: chartData.values,
+                fill: false,
+                tension: 0.1,
+                borderColor: '#10b981',
+                backgroundColor: '#10b981'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    display: true,
+                    title: { display: true, text: 'Fecha' }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: '1RM (kg)' }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
 {% endblock %}

@@ -1,35 +1,58 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h2>{% if mode == 'login' %}Iniciar sesión{% else %}Registro de usuario{% endif %}</h2>
+<div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-colors">
+    <div class="p-6">
+        <div class="flex justify-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-heading">
+                {% if mode == 'login' %}Iniciar sesión{% else %}Registro de usuario{% endif %}
+            </h2>
+        </div>
 
-<form method="post" action="{{ url_for('auth.' + mode) }}">
-    <!-- usuario -->
-    <label>Usuario:
-        <input type="text" name="nombre" value="{{ nombre }}" required>
-    </label><br><br>
+        <form method="post" action="{{ url_for('auth.' + mode) }}" class="space-y-4">
+            <div>
+                <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Usuario</label>
+                <input type="text" id="nombre" name="nombre" value="{{ nombre }}" required
+                    class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+            </div>
 
-    <!-- contraseña -->
-    <label>Contraseña:
-        <input type="password" name="contraseña" required>
-    </label><br><br>
+            <div>
+                <label for="contraseña" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
+                <input type="password" id="contraseña" name="contraseña" required
+                    class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+            </div>
 
-    <!-- botón dinámico -->
-    <button type="submit">
-        {% if mode == 'login' %}Entrar{% else %}Registrarse{% endif %}
-    </button>
+            <div>
+                <button type="submit" 
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                    {% if mode == 'login' %}Entrar{% else %}Registrarse{% endif %}
+                </button>
+            </div>
 
-    <!-- error inline -->
-    {% if error %}
-        <p style="color:red; margin-top:5px;">{{ error }}</p>
-    {% endif %}
-</form>
+            {% if error %}
+                <div class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 px-4 py-3 rounded-md text-sm">
+                    {{ error }}
+                </div>
+            {% endif %}
+        </form>
 
-<!-- enlace para cambiar de modo -->
-{% if mode == 'login' %}
-<p>¿No tienes cuenta? <a href="{{ url_for('auth.register') }}">Regístrate aquí</a></p>
-{% else %}
-<p>¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión aquí</a></p>
-{% endif %}
-
+        <div class="mt-6 text-center text-sm">
+            {% if mode == 'login' %}
+                <p class="text-gray-600 dark:text-gray-400">
+                    ¿No tienes cuenta? 
+                    <a href="{{ url_for('auth.register') }}" class="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 transition-colors">
+                        Regístrate aquí
+                    </a>
+                </p>
+            {% else %}
+                <p class="text-gray-600 dark:text-gray-400">
+                    ¿Ya tienes cuenta? 
+                    <a href="{{ url_for('auth.login') }}" class="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 transition-colors">
+                        Inicia sesión aquí
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
