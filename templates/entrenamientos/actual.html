@@ -81,24 +81,24 @@
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     {% for serie in series %}
                                         {% set i = loop.index0 %}
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <tr class="hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors">
                                             <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                                                 {{ i+1 }}
                                             </td>
                                             <td class="px-3 py-2 whitespace-nowrap">
                                                 <input type="number" name="peso_{{ clave }}_{{ i }}" value="{{ serie.peso }}" step="0.01" min="0" 
                                                     placeholder="{{ ultimos_valores[clave][i].peso if i < ultimos_valores[clave]|length else '' }}"
-                                                    class="w-20 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                                                    class="w-20 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none dark:text-white transition-colors">
                                             </td>
                                             <td class="px-3 py-2 whitespace-nowrap">
                                                 <input type="number" name="reps_{{ clave }}_{{ i }}" value="{{ serie.reps }}" step="1" min="1" 
                                                     placeholder="{{ ultimos_valores[clave][i].reps if i < ultimos_valores[clave]|length else '' }}"
-                                                    class="w-20 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                                                    class="w-20 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none dark:text-white transition-colors">
                                             </td>
                                             <td class="px-3 py-2 whitespace-nowrap">
                                                 <div class="flex items-center">
                                                     <input type="checkbox" id="hecha_{{ clave }}_{{ i }}" name="hecha_{{ clave }}_{{ i }}" {% if serie.hecha %}checked{% endif %}
-                                                        class="custom-checkbox">
+                                                        class="custom-checkbox w-5 h-5 accent-primary-600">
                                                 </div>
                                             </td>
                                         </tr>
