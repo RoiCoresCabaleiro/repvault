@@ -10,7 +10,7 @@
         <form method="POST" class="space-y-6">
             <div>
                 <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
-                <input type="text" id="nombre" name="nombre" value="{{ nombre }}" required
+                <input type="text" id="nombre" name="nombre" value="{{ nombre }}"
                     class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
             </div>
 
@@ -22,7 +22,7 @@
 
             <div>
                 <label for="grupo_muscular" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Grupo muscular</label>
-                <select id="grupo_muscular" name="grupo_muscular" required
+                <select id="grupo_muscular" name="grupo_muscular"
                     class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
                     <option value="">-- Selecciona uno --</option>
                     {% for g in grupos_validos %}
@@ -33,7 +33,7 @@
 
             <div>
                 <label for="equipamiento" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de equipamiento</label>
-                <select id="equipamiento" name="equipamiento" required
+                <select id="equipamiento" name="equipamiento"
                     class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
                     <option value="">-- Selecciona uno --</option>
                     {% for e in equipamientos_validos %}
