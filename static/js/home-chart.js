@@ -1,4 +1,3 @@
-// Espera a que todo el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => {
     // 1) Lee los datos JSON inyectados por Jinja
     const raw = document.getElementById("week-data")?.textContent;
@@ -12,25 +11,25 @@ document.addEventListener("DOMContentLoaded", () => {
     new Chart(ctx, {
         type: "bar",
         data: {
-        labels: labels,
-        datasets: [{
-            label: "Entrenamientos",
-            data: counts,
-            backgroundColor: "rgba(165, 180, 252, 0.8)",
-            borderColor:     "rgba(165, 180, 252, 1)",
-            borderWidth: 1,
-        }]
+            labels: labels,
+            datasets: [{
+                label: "Entrenamientos",
+                data: counts,
+                backgroundColor: "rgba(165, 180, 252, 0.8)",
+                borderColor:     "rgba(165, 180, 252, 1)",
+                borderWidth: 1,
+            }]
         },
         options: {
-        scales: {
-            x: { grid: { display: false } },
-            y: {
-            beginAtZero: true,
-            max: max,
-            ticks: { stepSize: 1 }
-            }
-        },
-        plugins: { legend: { display: false } }
+            scales: {
+                x: { grid: { display: false } },
+                y: {
+                    beginAtZero: true,
+                    max: max,
+                    ticks: { stepSize: 1 }
+                }
+            },
+            plugins: { legend: { display: false } }
         }
     });
 });

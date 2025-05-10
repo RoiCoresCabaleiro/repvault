@@ -119,53 +119,6 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- 2) Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // Obtener el JSON y construir el gráfico
-    const raw = document.getElementById('chart-data').textContent;
-    const chartData = JSON.parse(raw);
-
-    // Reformatear cada "DD/MM/YYYY" a "D mmm"
-    const formattedLabels = chartData.labels.map(label => {
-        const [d, m, y] = label.split('/');
-        const date = new Date(`${y}-${m}-${d}`);
-        return date.toLocaleDateString('es-ES', {
-            day:   'numeric',
-            month: 'short'
-        });
-    });
-
-    const ctx = document.getElementById('chart-1rm').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: formattedLabels,
-            datasets: [{
-                label: '1RM estimado',
-                data: chartData.values,
-                fill: false,
-                tension: 0.1,
-                borderColor: '#10b981',
-                backgroundColor: '#10b981'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    display: true,
-                    title: { display: true, text: 'Fecha' }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: { display: true, text: '1RM (kg)' }
-                }
-            },
-            plugins: {
-                legend: { display: false }
-            }
-        }
-    });
-</script>
+<script defer src="{{ url_for('static', filename='js/ver-ejercicio-chart.js') }}"></script>
 {% endblock %}
