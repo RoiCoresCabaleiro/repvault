@@ -251,6 +251,10 @@
                     history.replaceState(null, "", "#" + targetId);
                 });
             });
+
+            document.querySelectorAll("a.month-nav").forEach(link => {
+                link.addEventListener("click", saveScroll);
+            });
         });
     </script>
     

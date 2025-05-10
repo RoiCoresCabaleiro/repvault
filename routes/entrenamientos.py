@@ -396,4 +396,8 @@ def historial():
     MESES_ES = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"]
     mes_nombre = MESES_ES[mes - 1]
 
-    return render_template("entrenamientos/historial.html", historial=agrupados, ejercicios_nombres=ejercicios_nombres, calendario_filas=calendario_filas, mes=mes, año=año, mes_nombre=mes_nombre)
+    # Obtener fecha actual para restaurar el calendario al mes actual
+    hoy = datetime.today()
+    hoy_mes, hoy_año = hoy.month, hoy.year
+
+    return render_template("entrenamientos/historial.html", historial=agrupados, ejercicios_nombres=ejercicios_nombres, calendario_filas=calendario_filas, mes=mes, año=año, mes_nombre=mes_nombre, hoy_mes=hoy_mes, hoy_año=hoy_año)
