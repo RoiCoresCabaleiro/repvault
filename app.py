@@ -7,6 +7,8 @@ from auth import auth_bp
 from routes.ejercicios import ejercicios_bp
 from routes.plantillas import plantillas_bp
 from routes.entrenamientos import entrenamientos_bp
+from routes.home import home_bp
+
 from models.usuario import Usuario
 
 app = Flask(__name__)
@@ -30,6 +32,7 @@ def unauthorized():
 
 # Registrar Blueprints
 app.register_blueprint(auth_bp)
+app.register_blueprint(home_bp)
 app.register_blueprint(ejercicios_bp)
 app.register_blueprint(plantillas_bp)
 app.register_blueprint(entrenamientos_bp)

@@ -102,6 +102,9 @@
                 <!-- Gráfico 1RM en el tiempo -->
                 <div class="mt-4">
                     <canvas id="chart-1rm" height="200" class="w-full"></canvas>
+                    <script type="application/json" id="chart-data">
+                        {{ {"labels": rm_labels, "values": rm_values} | tojson }}
+                    </script>
                 </div>
             </div>
         </div>
@@ -116,11 +119,6 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- 1) Contenedor JSON (solo JSON, no JS) -->
-<script type="application/json" id="chart-data">
-    {{ {"labels": rm_labels, "values": rm_values} | tojson }}
-</script>
-
 <!-- 2) Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
