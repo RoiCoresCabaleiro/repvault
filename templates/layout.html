@@ -166,97 +166,97 @@
     <main class="container mx-auto px-4 py-6 pb-16">
         {% block content %}{% endblock %}
     </main>
+    
+    {% block scripts %}{% endblock %}
+</body>
 
-    {% block scripts %}
-        <script>
-            // Manejo del tema claro/oscuro
-            const themeToggle = document.getElementById('theme-toggle');
-            const html = document.documentElement;
-            
-            // Verificar preferencia guardada
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                html.classList.add('dark');
-            } else {
-                html.classList.remove('dark');
-            }
-            
-            // Toggle del tema
-            themeToggle.addEventListener('click', () => {
-                html.classList.toggle('dark');
-                localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
-            });
-        </script>
-        <script>
-            // Sistema de restauración de scroll mejorado + smooth scroll selectivo
-            document.addEventListener("DOMContentLoaded", function() {
-                const currentPath = window.location.pathname;
-                const scrollDataRaw = sessionStorage.getItem("scrollPosition");
-        
-                if (scrollDataRaw) {
-                    try {
-                        const { path, position } = JSON.parse(scrollDataRaw);
-        
-                        if (path === currentPath && position > 0) {
-                            // Mostrar contenido antes de scrollear para evitar parpadeo
-                            document.body.classList.remove("scroll-restore-pending");
-        
-                            // Restauración instantánea tras render
-                            requestAnimationFrame(() => {
-                                window.scrollTo(0, position);
-                            });
-                        } else {
-                            document.body.classList.remove("scroll-restore-pending");
-                        }
-                    } catch (e) {
-                        console.error("Error al restaurar posición de scroll:", e);
-                        document.body.classList.remove("scroll-restore-pending");
-                    }
-                    sessionStorage.removeItem("scrollPosition");
+<script>
+    // Manejo del tema claro/oscuro
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    
+    // Verificar preferencia guardada
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        html.classList.add('dark');
+    } else {
+        html.classList.remove('dark');
+    }
+    
+    // Toggle del tema
+    themeToggle.addEventListener('click', () => {
+        html.classList.toggle('dark');
+        localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+    });
+</script>
+<script>
+    // Sistema de restauración de scroll mejorado + smooth scroll selectivo
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentPath = window.location.pathname;
+        const scrollDataRaw = sessionStorage.getItem("scrollPosition");
+    
+        if (scrollDataRaw) {
+            try {
+                const { path, position } = JSON.parse(scrollDataRaw);
+    
+                if (path === currentPath && position > 0) {
+                    // Mostrar contenido antes de scrollear para evitar parpadeo
+                    document.body.classList.remove("scroll-restore-pending");
+    
+                    // Restauración instantánea tras render
+                    requestAnimationFrame(() => {
+                        window.scrollTo(0, position);
+                    });
                 } else {
                     document.body.classList.remove("scroll-restore-pending");
                 }
-        
-                // Guardar posición antes de navegar con formularios o filtros
-                function saveScroll() {
-                    if (window.scrollY > 0) {
-                        sessionStorage.setItem(
-                            "scrollPosition",
-                            JSON.stringify({
-                                path: window.location.pathname,
-                                position: window.scrollY
-                            })
-                        );
-                    }
-                }
-        
-                document.querySelectorAll('form:not([target="_blank"]):not(.no-scroll-save)').forEach(form => form.addEventListener("submit", saveScroll));
-        
-                document.querySelectorAll('button[type="submit"][name="filtrar"]').forEach(btn => btn.addEventListener("click", saveScroll));
-        
-                // Smooth scroll solo para enlaces de día (href="#...") sin usar scroll-behavior global
-                document.querySelectorAll('a[href^="#"]').forEach(link => {
-                    link.addEventListener("click", function(e) {
-                        const targetId = this.getAttribute("href").slice(1);
-                        const dest = document.getElementById(targetId);
-                        if (!dest) return;  // no es un enlace de día válido
-            
-                        e.preventDefault();
-                        // eliminamos cualquier posición previa para no interferir con restore
-                        sessionStorage.removeItem("scrollPosition");
-            
-                        // scroll suave al destino
-                        dest.scrollIntoView({ behavior: "smooth", block: "start" });
-            
-                        // actualizar el hash sin salto instantáneo
-                        history.replaceState(null, "", "#" + targetId);
-                    });
-                });
-
-                document.querySelectorAll("a.month-nav").forEach(link => {
-                    link.addEventListener("click", saveScroll);
-                });
+            } catch (e) {
+                console.error("Error al restaurar posición de scroll:", e);
+                document.body.classList.remove("scroll-restore-pending");
+            }
+            sessionStorage.removeItem("scrollPosition");
+        } else {
+            document.body.classList.remove("scroll-restore-pending");
+        }
+    
+        // Guardar posición antes de navegar con formularios o filtros
+        function saveScroll() {
+            if (window.scrollY > 0) {
+                sessionStorage.setItem(
+                    "scrollPosition",
+                    JSON.stringify({
+                        path: window.location.pathname,
+                        position: window.scrollY
+                    })
+                );
+            }
+        }
+    
+        document.querySelectorAll('form:not([target="_blank"]):not(.no-scroll-save)').forEach(form => form.addEventListener("submit", saveScroll));
+    
+        document.querySelectorAll('button[type="submit"][name="filtrar"]').forEach(btn => btn.addEventListener("click", saveScroll));
+    
+        // Smooth scroll solo para enlaces de día (href="#...") sin usar scroll-behavior global
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener("click", function(e) {
+                const targetId = this.getAttribute("href").slice(1);
+                const dest = document.getElementById(targetId);
+                if (!dest) return;  // no es un enlace de día válido
+    
+                e.preventDefault();
+                // eliminamos cualquier posición previa para no interferir con restore
+                sessionStorage.removeItem("scrollPosition");
+    
+                // scroll suave al destino
+                dest.scrollIntoView({ behavior: "smooth", block: "start" });
+    
+                // actualizar el hash sin salto instantáneo
+                history.replaceState(null, "", "#" + targetId);
             });
-        </script>
-    {% endblock %}
-</body>
+        });
+
+        document.querySelectorAll("a.month-nav").forEach(link => {
+            link.addEventListener("click", saveScroll);
+        });
+    });
+</script>
 </html>

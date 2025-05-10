@@ -2,221 +2,148 @@
 {% import "shared/ejercicios_filtro.html" as filtro %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-heading mb-2 md:mb-0">
-            Entrenamiento en curso
-            <span id="cronometro" class="ml-2 text-base font-normal text-gray-600 dark:text-gray-400">
-                cargando cronómetro...
-            </span>
-        </h2>
-    </div>
-
-    <form id="form-actual" method="POST" action="{{ url_for('entrenamientos.actual') }}">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="nombre_plantilla" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre del entrenamiento</label>
-                    <input type="text" id="nombre_plantilla" name="nombre_plantilla" value="{{ entrenamiento.nombre_plantilla }}" required
-                        class="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
-                </div>
-                
-                <div>
-                    <label for="observaciones" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
-                    <textarea id="observaciones" name="observaciones" rows="1"
-                        class="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">{{ entrenamiento.observaciones }}</textarea>
-                </div>
-            </div>
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-heading mb-2 md:mb-0">
+                Entrenamiento en curso
+                <span id="cronometro" class="ml-2 text-base font-normal text-gray-600 dark:text-gray-400" data-inicio="{{ entrenamiento.inicio }}">
+                    cargando cronómetro...
+                </span>
+            </h2>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- COLUMNA IZQUIERDA: Ejercicios en curso -->
-            <div class="lg:col-span-2">
-                {% for clave, series in entrenamiento.ejercicios.items() %}
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors">
-                        <div class="flex flex-wrap items-center justify-between mb-4">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                                {% for k, ej in ejercicios %}
-                                    {% if k == clave %}{{ ej.nombre }}{% endif %}
-                                {% endfor %}
-                            </h3>
+        <form id="form-actual" method="POST" action="{{ url_for('entrenamientos.actual') }}" data-show-confirm="{{ 'true' if show_confirm else 'false' }}" data-finalize-url="{{ url_for('entrenamientos.finalizar') }}">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="nombre_plantilla" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre del entrenamiento</label>
+                        <input type="text" id="nombre_plantilla" name="nombre_plantilla" value="{{ entrenamiento.nombre_plantilla }}"
+                            class="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
+                    </div>
+                    
+                    <div>
+                        <label for="observaciones" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observaciones</label>
+                        <textarea id="observaciones" name="observaciones" rows="1"
+                            class="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">{{ entrenamiento.observaciones }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- COLUMNA IZQUIERDA: Ejercicios en curso -->
+                <div class="lg:col-span-2">
+                    {% for clave, series in entrenamiento.ejercicios.items() %}
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors">
+                            <div class="flex flex-wrap items-center justify-between mb-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                                    {% for k, ej in ejercicios %}
+                                        {% if k == clave %}{{ ej.nombre }}{% endif %}
+                                    {% endfor %}
+                                </h3>
+                                
+                                <div class="flex items-center gap-2 mt-2 sm:mt-0">
+                                    <button type="submit" name="modificar_series" value="añadir-{{ clave }}" 
+                                        class="inline-flex items-center px-3 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-sm transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        Serie
+                                    </button>
+                                    
+                                    <button type="submit" name="modificar_series" value="quitar-{{ clave }}" 
+                                        class="inline-flex items-center px-3 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-sm transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                                        </svg>
+                                        Serie
+                                    </button>
+                                    
+                                    <button type="submit" name="eliminar_ejercicio" value="{{ clave }}" 
+                                        class="inline-flex items-center px-3 py-1 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded text-sm transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
                             
-                            <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                                <button type="submit" name="modificar_series" value="añadir-{{ clave }}" 
-                                    class="inline-flex items-center px-3 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-sm transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    Serie
-                                </button>
-                                
-                                <button type="submit" name="modificar_series" value="quitar-{{ clave }}" 
-                                    class="inline-flex items-center px-3 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-sm transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-                                    </svg>
-                                    Serie
-                                </button>
-                                
-                                <button type="submit" name="eliminar_ejercicio" value="{{ clave }}" 
-                                    class="inline-flex items-center px-3 py-1 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded text-sm transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                    Eliminar
-                                </button>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead>
+                                        <tr>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Serie</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Peso (kg)</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reps</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Completada</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        {% for serie in series %}
+                                            {% set i = loop.index0 %}
+                                            <tr class="hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors">
+                                                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                                    {{ i+1 }}
+                                                </td>
+                                                <td class="px-3 py-2 whitespace-nowrap">
+                                                    <input type="number" name="peso_{{ clave }}_{{ i }}" value="{{ serie.peso }}" step="0.01" min="0" 
+                                                        placeholder="{{ ultimos_valores[clave][i].peso if i < ultimos_valores[clave]|length else '' }}"
+                                                        class="w-20 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none dark:text-white transition-colors">
+                                                </td>
+                                                <td class="px-3 py-2 whitespace-nowrap">
+                                                    <input type="number" name="reps_{{ clave }}_{{ i }}" value="{{ serie.reps }}" step="1" min="1" 
+                                                        placeholder="{{ ultimos_valores[clave][i].reps if i < ultimos_valores[clave]|length else '' }}"
+                                                        class="w-20 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none dark:text-white transition-colors">
+                                                </td>
+                                                <td class="px-3 py-2 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <input type="checkbox" id="hecha_{{ clave }}_{{ i }}" name="hecha_{{ clave }}_{{ i }}" {% if serie.hecha %}checked{% endif %}
+                                                            class="custom-checkbox w-5 h-5 accent-primary-600">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+                    {% endfor %}
+
+                    <div class="flex flex-wrap gap-3 mt-4 mb-8">
+                        <button type="submit" name="validar" id="boton-validar"
+                            class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Terminar entrenamiento
+                        </button>
                         
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead>
-                                    <tr>
-                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Serie</th>
-                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Peso (kg)</th>
-                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reps</th>
-                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Completada</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {% for serie in series %}
-                                        {% set i = loop.index0 %}
-                                        <tr class="hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors">
-                                            <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                                {{ i+1 }}
-                                            </td>
-                                            <td class="px-3 py-2 whitespace-nowrap">
-                                                <input type="number" name="peso_{{ clave }}_{{ i }}" value="{{ serie.peso }}" step="0.01" min="0" 
-                                                    placeholder="{{ ultimos_valores[clave][i].peso if i < ultimos_valores[clave]|length else '' }}"
-                                                    class="w-20 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none dark:text-white transition-colors">
-                                            </td>
-                                            <td class="px-3 py-2 whitespace-nowrap">
-                                                <input type="number" name="reps_{{ clave }}_{{ i }}" value="{{ serie.reps }}" step="1" min="1" 
-                                                    placeholder="{{ ultimos_valores[clave][i].reps if i < ultimos_valores[clave]|length else '' }}"
-                                                    class="w-20 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none dark:text-white transition-colors">
-                                            </td>
-                                            <td class="px-3 py-2 whitespace-nowrap">
-                                                <div class="flex items-center">
-                                                    <input type="checkbox" id="hecha_{{ clave }}_{{ i }}" name="hecha_{{ clave }}_{{ i }}" {% if serie.hecha %}checked{% endif %}
-                                                        class="custom-checkbox w-5 h-5 accent-primary-600">
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                        <button type="submit" formaction="{{ url_for('entrenamientos.cancelar') }}" 
+                            class="inline-flex items-center px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-md text-sm font-medium transition-colors"
+                            onclick="return confirm('¿Estás seguro de que quieres cancelar el entrenamiento? Se perderá todo el progreso.')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Cancelar entrenamiento
+                        </button>
                     </div>
-                {% endfor %}
-
-                <div class="flex flex-wrap gap-3 mt-4 mb-8">
-                    <button type="submit" name="validar" id="boton-validar"
-                        class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Terminar entrenamiento
-                    </button>
                     
-                    <button type="submit" formaction="{{ url_for('entrenamientos.cancelar') }}" 
-                        class="inline-flex items-center px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-md text-sm font-medium transition-colors"
-                        onclick="return confirm('¿Estás seguro de que quieres cancelar el entrenamiento? Se perderá todo el progreso.')">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Cancelar entrenamiento
-                    </button>
+                    {% if error %}
+                        <div id="error-finalizar" class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 px-4 py-3 rounded-md text-sm mb-6">
+                            {{ error }}
+                        </div>
+                    {% endif %}
                 </div>
-                
-                {% if error %}
-                    <div id="error-finalizar" class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 px-4 py-3 rounded-md text-sm mb-6">
-                        {{ error }}
-                    </div>
-                {% endif %}
+
+                <!-- COLUMNA DERECHA: Filtros y añadir ejercicios -->
+                <div class="lg:col-span-1">
+                    {{ filtro.ejercicios_filtro(ejercicios_disponibles, grupos_validos, equipamientos_validos, grupo_filtro, equipamiento_filtro) }}
+                </div>
             </div>
-
-            <!-- COLUMNA DERECHA: Filtros y añadir ejercicios -->
-            <div class="lg:col-span-1">
-                {{ filtro.ejercicios_filtro(ejercicios_disponibles, grupos_validos, equipamientos_validos, grupo_filtro, equipamiento_filtro) }}
-            </div>
-        </div>
-    </form>
-</div>
-
-{% if show_confirm %}
-<script>
-    if (confirm("¿Has acabado?\nSe eliminarán todas las series inválidas o sin marcar como completadas.")) {
-        const form = document.getElementById("form-actual");
-        form.action = "{{ url_for('entrenamientos.finalizar') }}";
-        form.submit();
-    }
-</script>
-{% endif %}
-
+        </form>
+    </div>
 {% endblock %}
 
 {% block scripts %}
-<script>
-    const inicioTexto = "{{ entrenamiento.inicio }}";
-    const horaStr = inicioTexto.split(" ")[1];  // "14:38:10"
-
-    if (horaStr) {
-        const [hora, minuto, segundo] = horaStr.split(":").map(Number);
-
-        const ahora = new Date();
-        const inicio = new Date();
-        inicio.setHours(hora, minuto, segundo, 0);
-
-        function actualizarCronometro() {
-            const ahora = new Date();
-            const diff = Math.floor((ahora - inicio) / 1000); // en segundos
-
-            const h = String(Math.floor(diff / 3600)).padStart(2, '0');
-            const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
-            const s = String(diff % 60).padStart(2, '0');
-
-            document.getElementById("cronometro").textContent = `${h}:${m}:${s}`;
-        }
-
-        actualizarCronometro();
-        setInterval(actualizarCronometro, 1000);
-    }
-</script>
-<script>
-    document.querySelectorAll(".custom-checkbox").forEach(cb => {
-        cb.addEventListener("change", function() {
-            const [ , clave, i ] = this.name.split("_");
-  
-            const peso = document.querySelector(`[name='peso_${clave}_${i}']`);
-            const reps = document.querySelector(`[name='reps_${clave}_${i}']`);
-  
-            if (!peso.value.trim() || !reps.value.trim()) {
-                this.checked = false;
-    
-                this.classList.add("checkbox-shake");
-    
-                // Resaltar campos vacíos
-                if (!peso.value.trim()) {
-                    peso.classList.add('border-red-500', 'dark:border-red-500');
-                    peso.focus();
-                }
-                    
-                if (!reps.value.trim()) {
-                    reps.classList.add('border-red-500', 'dark:border-red-500');
-                    if (peso.value.trim()) {
-                        reps.focus();
-                    }
-                }
-                    
-                // Quitar animación y resaltado después de un tiempo
-                setTimeout(() => {
-                    this.classList.remove('checkbox-shake');
-                    peso.classList.remove('border-red-500', 'dark:border-red-500');
-                    reps.classList.remove('border-red-500', 'dark:border-red-500');
-                }, 1500);
-            }
-        });
-    });
-</script>
-  
+    <script defer src="{{ url_for('static', filename='js/entrenamiento-actual.js') }}"></script>
 {% endblock %}
