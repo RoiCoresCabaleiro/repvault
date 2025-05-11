@@ -3,7 +3,7 @@ from flask_login import LoginManager
 import sirope
 import json
 
-from auth import auth_bp
+from routes.auth import auth_bp
 from routes.ejercicios import ejercicios_bp
 from routes.plantillas import plantillas_bp
 from routes.entrenamientos import entrenamientos_bp
@@ -36,10 +36,6 @@ app.register_blueprint(home_bp)
 app.register_blueprint(ejercicios_bp)
 app.register_blueprint(plantillas_bp)
 app.register_blueprint(entrenamientos_bp)
-
-@app.route("/")
-def home():
-    return render_template("home.html")
 
 if __name__ == "__main__":
     app.run(debug=True)                     #app.run(host='0.0.0.0', port=5000, debug=True)

@@ -56,7 +56,7 @@ def actual():
             entrenamiento = e
             break
     if not entrenamiento:
-        return redirect(url_for("home"))
+        return redirect(url_for("home.home"))
 
     # — Reconstruir contexto —
     ejercicios_usuario, ultimos_valores, grupo_filtro, equipamiento_filtro, ejercicios_disponibles = build_ejercicio_context(srp, entrenamiento)
@@ -173,7 +173,7 @@ def finalizar():
             entrenamiento = e
             break
     if not entrenamiento:
-        return redirect(url_for("home"))
+        return redirect(url_for("home.home"))
 
     # — 1) Actualizar nombre y observaciones desde el formulario —
     entrenamiento.nombre_plantilla = request.form.get("nombre_plantilla", entrenamiento.nombre_plantilla).strip()

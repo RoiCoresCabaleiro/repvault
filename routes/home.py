@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template
-from flask_login import current_user
+from flask import Blueprint, render_template, url_for, redirect
+from flask_login import current_user, login_required
 import sirope
 from datetime import datetime, timedelta
 from collections import Counter
@@ -8,8 +8,18 @@ from models.entrenamiento_realizado import EntrenamientoRealizado
 
 home_bp = Blueprint("home", __name__, url_prefix="")
 
+
 @home_bp.route("/")
 def home():
+    if current_user.is_authenticated:
+        return redirect(url_for("home.dashboard"))
+    
+    return render_template("home.html")
+
+
+@home_bp.route("/home")
+@login_required
+def dashboard():
     srp = sirope.Sirope()
 
     # --- 1) Fechas de hoy y hace 8 semanas ---

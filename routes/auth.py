@@ -20,7 +20,7 @@ def login():
         usuario = Usuario.find(srp, nombre)
         if usuario and usuario.comprobar_contraseña(contraseña):
             login_user(usuario)
-            return redirect(url_for("home"))
+            return redirect(url_for("home.home"))
         else:
             error = "Usuario o contraseña incorrectos."
 
@@ -50,7 +50,7 @@ def register():
             importar_plantillas_por_defecto(nuevo_usuario.get_id())
 
             login_user(nuevo_usuario)
-            return redirect(url_for("home"))
+            return redirect(url_for("home.home"))
 
     return render_template("auth.html", mode="register", error=error, nombre=nombre)
 
@@ -59,4 +59,4 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("home"))
+    return redirect(url_for("home.home"))
