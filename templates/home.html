@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-6xl mx-auto">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 font-heading">Bienvenido a RepVault</h2>
             
@@ -10,43 +10,49 @@
                     <p class="text-primary-800 dark:text-primary-300 font-medium">¡Hola, {{ current_user.nombre }}!</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <a href="{{ url_for('ejercicios.lista') }}" class="bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg p-4 flex flex-col items-center text-center transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        <h3 class="font-medium text-gray-900 dark:text-white">Ejercicios</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona tu catálogo de ejercicios</p>
-                    </a>
-                    
-                    <a href="{{ url_for('plantillas.lista') }}" class="bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg p-4 flex flex-col items-center text-center transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                        <h3 class="font-medium text-gray-900 dark:text-white">Rutinas</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Crea y gestiona tus rutinas de entrenamiento</p>
-                    </a>
-                    
-                    <a href="{{ url_for('entrenamientos.historial') }}" class="bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg p-4 flex flex-col items-center text-center transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <h3 class="font-medium text-gray-900 dark:text-white">Historial</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Revisa tu progreso y entrenamientos pasados</p>
-                    </a>
-                </div>
-
-                <!-- Gráfico de entrenamientos semanales -->
-                <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                            Entrenamientos por semana
-                        </h3>
-                        <script type="application/json" id="week-data">
-                            {{ {"labels": week_labels, "counts" :week_counts, "max" :max_count} | tojson }}
-                        </script>
+                <!-- Contenido principal en dos columnas -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <!-- Columna izquierda: Tarjetas de navegación -->
+                    <div class="md:col-span-1 space-y-4">
+                        <a href="{{ url_for('ejercicios.lista') }}" class="bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg p-4 flex flex-col items-center text-center transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Ejercicios</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona tu catálogo de ejercicios</p>
+                        </a>
+                        
+                        <a href="{{ url_for('plantillas.lista') }}" class="bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg p-4 flex flex-col items-center text-center transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Rutinas</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Crea y gestiona tus rutinas de entrenamiento</p>
+                        </a>
+                        
+                        <a href="{{ url_for('entrenamientos.historial') }}" class="bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg p-4 flex flex-col items-center text-center transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="font-medium text-gray-900 dark:text-white">Historial</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Revisa tu progreso y entrenamientos pasados</p>
+                        </a>
                     </div>
-                    <canvas id="weekChart" class="w-full h-64"></canvas>
+                    
+                    <!-- Columna derecha: Gráfico de entrenamientos -->
+                    <div class="md:col-span-2">
+                        <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6 h-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                    Entrenamientos por semana
+                                </h3>
+                                <script type="application/json" id="week-data">
+                                    {{ {"labels": week_labels, "counts": week_counts, "max": max_count} | tojson }}
+                                </script>
+                            </div>
+                            <canvas id="weekChart" class="w-full h-64"></canvas>
+                        </div>
+                    </div>
                 </div>
             {% else %}
                 <p class="text-gray-600 dark:text-gray-400 mb-6">Inicia sesión o regístrate para comenzar a registrar tus entrenamientos y seguir tu progreso.</p>
