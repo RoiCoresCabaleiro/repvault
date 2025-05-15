@@ -56,9 +56,12 @@ def dashboard():
 
     max_count = max(week_counts) if week_counts else 0
 
+    entrenamientos_totales = srp.num_objs(EntrenamientoRealizado)
+
     return render_template(
         "home.html",
         week_labels=week_labels,
         week_counts=week_counts,
-        max_count=max_count
+        max_count=max_count,
+        entrenamientos_totales=entrenamientos_totales
     )
