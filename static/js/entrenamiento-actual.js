@@ -27,26 +27,44 @@ document.addEventListener("DOMContentLoaded", () => {
       const reps = document.querySelector(`[name="reps_${clave}_${idx}"]`);
 
       if (!peso.value.trim() || !reps.value.trim()) {
-        // revertir check
+        // revertir check + shake
         cb.checked = false;
-        // shake
         cb.classList.add("checkbox-shake");
-        // resaltar y foco
-        if (!peso.value.trim()) peso.classList.add("border-red-500"), peso.focus();
-        if (!reps.value.trim()) reps.classList.add("border-red-500"),
-          peso.value.trim() && reps.focus();
+
+        // → aquí: borde rojo inline (funciona en claro y oscuro)
+        if (!peso.value.trim()) {
+          peso.style.border = '1px solid #f56565';
+          peso.focus();
+        }
+        if (!reps.value.trim()) {
+          reps.style.border = '1px solid #f56565';
+          if (peso.value.trim()) reps.focus();
+        }
 
         // limpiar después
         setTimeout(() => {
           cb.classList.remove("checkbox-shake");
-          peso.classList.remove("border-red-500");
-          reps.classList.remove("border-red-500");
+          peso.style.border = '';
+          reps.style.border = '';
         }, 1500);
       }
     });
   });
 
-  // — 3. CONFIRMAR FINALIZACIÓN —
+  // — 3. DESMARCAR SERIES INVALIDAS —
+  document.querySelectorAll('input[name^="peso_"], input[name^="reps_"]').forEach(input => {
+    input.addEventListener("input", () => {
+      const [tipo, soid, idx] = input.name.split("_");
+      const pesoVal = document.querySelector(`[name="peso_${soid}_${idx}"]`).value.trim();
+      const repsVal = document.querySelector(`[name="reps_${soid}_${idx}"]`).value.trim();
+      const checkbox = document.getElementById(`hecha_${soid}_${idx}`);
+      if (checkbox && (!pesoVal || !repsVal)) {
+        checkbox.checked = false;
+      }
+    });
+  });
+
+  // — 4. CONFIRMAR FINALIZACIÓN —
   const form = document.getElementById("form-actual");
   if (form && form.dataset.showConfirm === "true") {
     const finalizeUrl = form.dataset.finalizeUrl;
