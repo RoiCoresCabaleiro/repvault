@@ -80,8 +80,8 @@ def importar_plantillas_por_defecto(usuario_nombre):
 # Genera entrenamientos diarios para el usuario siguiendo el ciclo dado,
 # rellenando cada ejercicio de la plantilla con valores aleatorios de reps y peso
 def generar_entrenamientos_historicos(usuario_nombre: str) -> None:
-    dias_hacia_atras = 60
-    ciclo = ["push", "pull", "legs", "descanso", "push", "pull", "legs", "descanso", "push", "pull", "legs", "descanso", "descanso"]
+    dias_hacia_atras = 90
+    ciclo = ["push", "pull", "legs", "descanso"]
     rango_reps = (8, 15)
     rango_peso = (20, 80)
     
