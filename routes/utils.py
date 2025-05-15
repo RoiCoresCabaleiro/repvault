@@ -1,10 +1,12 @@
 import json, os
 from flask import current_app
 import sirope
+import random
+from datetime import datetime, timedelta
 
 from models.ejercicio import Ejercicio
 from models.plantilla import Plantilla
-
+from models.entrenamiento_realizado import EntrenamientoRealizado
 
 
 # Devuelve la identificación segura para un objeto, dado su OID
@@ -72,3 +74,55 @@ def importar_plantillas_por_defecto(usuario_nombre):
         p.orden      = orden
         p.ejercicios = ejercicios
         srp.save(p)
+
+
+
+# Genera entrenamientos diarios para el usuario siguiendo el ciclo dado,
+# rellenando cada ejercicio de la plantilla con valores aleatorios de reps y peso
+def generar_entrenamientos_historicos(usuario_nombre: str) -> None:
+    dias_hacia_atras = 60
+    ciclo = ["push", "pull", "legs", "descanso", "push", "pull", "legs", "descanso", "push", "pull", "legs", "descanso", "descanso"]
+    rango_reps = (8, 15)
+    rango_peso = (20, 80)
+    
+    srp = sirope.Sirope()
+    inicio = datetime.now() - timedelta(days=dias_hacia_atras)
+    fin    = datetime.now()
+    fecha = inicio
+    i = 0
+
+    while fecha <= fin:
+        rutina = ciclo[i % len(ciclo)].lower()
+        # saltar descanso antes de buscar plantilla
+        if rutina == "descanso":
+            fecha += timedelta(days=1)
+            i += 1
+            continue
+
+        tpl = srp.find_first(Plantilla, lambda p: p.usuario_nombre == usuario_nombre and p.nombre.lower() == rutina)
+        if tpl:
+            ejercicios_payload = {}
+            for soid in tpl.orden:
+                n_series = tpl.ejercicios.get(soid, 0)
+                series = []
+                for _ in range(n_series):
+                    series.append({
+                        "peso": str(random.randint(*rango_peso)),
+                        "reps":  random.randint(*rango_reps)
+                    })
+                ejercicios_payload[soid] = series
+
+            ent = EntrenamientoRealizado(
+                usuario_nombre = usuario_nombre,
+                nombre         = f"{tpl.nombre.title()} {fecha.strftime('%d-%m-%Y')}",
+                observaciones  = tpl.observaciones or "",
+                ejercicios     = ejercicios_payload,
+                fecha          = fecha.strftime("%d/%m/%Y %H:%M:%S"),
+                duracion       = random.randint(30, 90)
+            )
+            srp.save(ent)
+
+        fecha += timedelta(days=1)
+        i += 1
+
+    print("✅ Generación histórica completada para", usuario_nombre)

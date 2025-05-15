@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, login_required
 import sirope
 
 from models.usuario import Usuario
-from routes.utils import importar_ejercicios_por_defecto, importar_plantillas_por_defecto
+from routes.utils import importar_ejercicios_por_defecto, importar_plantillas_por_defecto, generar_entrenamientos_historicos
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -46,8 +46,11 @@ def register():
             srp.save(nuevo_usuario)
 
             importar_ejercicios_por_defecto(nuevo_usuario.get_id())
-
             importar_plantillas_por_defecto(nuevo_usuario.get_id())
+
+            # Crear un usuario "prueba" para probar el funcionamiento de la vista de historial de entrenamientos y de ejercicios
+            if nuevo_usuario.nombre == "prueba":
+                generar_entrenamientos_historicos(nuevo_usuario.nombre)
 
             login_user(nuevo_usuario)
             return redirect(url_for("home.home"))
