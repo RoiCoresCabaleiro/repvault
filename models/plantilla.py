@@ -4,5 +4,5 @@ class Plantilla:
         self.observaciones = observaciones
         self.usuario_nombre = usuario_nombre
         self.ejercicios = {}  # dict: clave_ejercicio → número de series
-        self.orden = []       # lista ordenada de claves de ejercicios
+        self.orden = []  # lista ordenada de claves de ejercicios
         self.ultima_vez = None

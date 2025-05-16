@@ -3,6 +3,6 @@ class EntrenamientoRealizado:
         self.usuario_nombre = usuario_nombre
         self.nombre = nombre
         self.observaciones = observaciones
-        self.ejercicios = ejercicios  # dict: clave → lista de series
-        self.fecha = fecha  # fecha = hora de inicio
-        self.duracion = duracion  # en minutos
+        self.ejercicios = ejercicios  # dict: clave → lista de series (cada series es un diccionario con "peso", "reps", "hecha")
+        self.fecha = fecha  # hora de inicio
+        self.duracion = duracion
