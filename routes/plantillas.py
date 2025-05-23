@@ -122,7 +122,7 @@ def gestionar(soid=None):
                 error = "Debes seleccionar al menos un ejercicio."
             else:
                 # Comprobar duplicados (excluyendo la propia al editar)
-                original_oid = plantilla_real.__oid__ if plantilla_real else None
+                original_oid = plantilla_real.oid if plantilla_real else None
                 for oid_chk in srp.load_all_keys(Plantilla):
                     p = srp.load(oid_chk)
                     if (p.usuario_nombre == usuario and
