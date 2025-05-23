@@ -66,7 +66,7 @@ def importar_plantillas_por_defecto(usuario_nombre):
             if not e:
                 continue
 
-            oid = e.__oid__
+            oid = e.oid
             soid = encode_oid(oid)
             orden.append(soid)
             ejercicios[soid] = item.get("series", 1)

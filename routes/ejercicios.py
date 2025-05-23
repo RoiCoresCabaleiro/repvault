@@ -76,7 +76,7 @@ def gestionar(clave=None):
             error = "Debes introducir un nombre."
         
         if not error:
-            dup = srp.find_first(Ejercicio, lambda e: e.usuario_nombre == usuario and e.nombre.lower() == nombre.lower() and (not existente or e.__oid__ != existente.__oid__))
+            dup = srp.find_first(Ejercicio, lambda e: e.usuario_nombre == usuario and e.nombre.lower() == nombre.lower() and (not existente or e.oid != existente.oid))
             if dup:
                 error = "Ya tienes otro ejercicio con ese nombre."
 
