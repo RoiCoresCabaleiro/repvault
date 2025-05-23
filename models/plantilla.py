@@ -9,13 +9,5 @@ class Plantilla:
         self.ultima_vez = None
 
     @property
-    def nombre(self) -> str:
-        return self._nombre
-    
-    @nombre.setter
-    def nombre(self, valor: str):
-        self._nombre = valor
-
-    @property
     def oid(self) -> str | None:
         return getattr(self, "__oid__", None)

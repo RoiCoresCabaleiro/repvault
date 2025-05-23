@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, abort
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from flask_login import login_required, current_user
 import sirope
 from datetime import datetime
@@ -34,9 +34,9 @@ def lista():
 
 
 @plantillas_bp.route("/nueva", methods=["GET", "POST"])
-@plantillas_bp.route("/editar/<soid>", methods=["GET", "POST"])
+@plantillas_bp.route("/editar/<clave>", methods=["GET", "POST"])
 @login_required
-def gestionar(soid=None):
+def gestionar(clave=None):
     srp     = sirope.Sirope()
     usuario = current_user.get_id()
     plantilla_real = None
@@ -46,14 +46,14 @@ def gestionar(soid=None):
         session.pop("tmp_plantilla", None)
 
     # Si estamos editando, cargamos la plantilla real
-    if soid:
+    if clave:
         try:
-            oid = decode_oid(soid)
+            plantilla_real = srp.load(decode_oid(clave))
         except Exception:
-            abort(404)
-        plantilla_real = srp.load(oid)
+            return redirect(url_for("plantillas.ver", soid=clave))
+
         if not plantilla_real or plantilla_real.usuario_nombre != usuario:
-            abort(404)
+             return redirect(url_for("plantillas.ver", soid=clave))
 
     # Inicializar estado temporal en sesión si no existe
     if "tmp_plantilla" not in session:
@@ -163,8 +163,8 @@ def gestionar(soid=None):
     return render_template(
         "plantillas/gestion_plantillas.html",
         plantilla=plantilla,
-        is_edit=bool(soid),
-        soid=soid,
+        is_edit=bool(clave),
+        soid=clave,
         error=error,
         ejercicios_seleccionados=seleccionados,
         ejercicios_disponibles=disponibles,
@@ -179,8 +179,7 @@ def calcular_seleccionados(plantilla):
     seleccionados = []
     for clave in plantilla.orden:
         try:
-            oid = decode_oid(clave)
-            e = srp.load(oid)
+            e = srp.load(decode_oid(clave))
             if e and e.usuario_nombre == current_user.get_id():
                 seleccionados.append((clave, e))
         except:
@@ -209,8 +208,7 @@ def calcular_disponibles(plantilla, grupo_filtro, equipamiento_filtro):
 @login_required
 def ver(clave):
     srp = sirope.Sirope()
-    oid = decode_oid(clave)
-    plantilla = srp.load(oid)
+    plantilla = srp.load(decode_oid(clave))
 
     if plantilla.usuario_nombre != current_user.get_id():
         return redirect(url_for("plantillas.lista"))
@@ -230,10 +228,9 @@ def ver(clave):
 @login_required
 def eliminar(clave):
     srp = sirope.Sirope()
-    oid = decode_oid(clave)
-    plantilla = srp.load(oid)
+    plantilla = srp.load(decode_oid(clave))
 
     if plantilla and plantilla.usuario_nombre == current_user.get_id():
-        srp.delete(oid)
+        srp.delete(plantilla.oid)
 
     return redirect(url_for("plantillas.lista"))

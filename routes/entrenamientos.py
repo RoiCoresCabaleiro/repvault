@@ -17,8 +17,7 @@ entrenamientos_bp = Blueprint("entrenamientos", __name__, url_prefix="/entrenami
 @login_required
 def iniciar(clave):
     srp = sirope.Sirope()
-    oid = decode_oid(clave)
-    plantilla = srp.load(oid)
+    plantilla = srp.load(decode_oid(clave))
 
     if plantilla.usuario_nombre != current_user.get_id():
         return redirect(url_for("plantillas.lista"))
@@ -257,8 +256,7 @@ def finalizar():
 
     # — Actualizar última vez de la plantilla origen — 
     try:
-        oid_pl = decode_oid(entrenamiento.plantilla_soid)
-        p = srp.load(oid_pl)
+        p = srp.load(decode_oid(entrenamiento.plantilla_soid))
         if p and p.usuario_nombre == current_user.get_id():
             p.ultima_vez = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             srp.save(p)
@@ -274,7 +272,7 @@ def finalizar():
         except:
             pass
 
-    srp.delete(entrenamiento.__oid__)
+    srp.delete(entrenamiento.oid)
     return redirect(url_for("entrenamientos.historial"))
 
 

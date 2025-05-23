@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, abort
+from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 import sirope
 from datetime import datetime
@@ -41,20 +41,19 @@ def lista():
 def gestionar(clave=None):
     srp     = sirope.Sirope()
     usuario = current_user.get_id()
+    error   = None
     existente = None
-    error = None
 
     # 1) Si se pasa clave → estamos editando
     if clave:
         try:
-            oid = decode_oid(clave)
-            existente = srp.load(oid)
-        except:
-            existente = None
+            existente = srp.load(decode_oid(clave))
+        except Exception:
+            return redirect(url_for("ejercicios.ver", clave=clave))
 
         if not existente or existente.usuario_nombre != usuario:
-            abort(404)
-
+            return redirect(url_for("ejercicios.ver", clave=clave))
+ 
     # 2) Valores iniciales del formulario
     if existente:
         nombre       = existente.nombre
@@ -109,7 +108,7 @@ def gestionar(clave=None):
     # 4) Renderizar formulario
     return render_template(
         "ejercicios/gestion_ejercicios.html",
-        is_edit=bool(existente),
+        is_edit=bool(clave),
         clave=clave,
         nombre=nombre,
         descripcion=descripcion,
@@ -126,20 +125,18 @@ def gestionar(clave=None):
 @login_required
 def ver(clave):
     srp = sirope.Sirope()
-    obj_id = decode_oid(clave)
-    ejercicio = srp.load(obj_id)
+    ejercicio = srp.load(decode_oid(clave))
 
     if ejercicio.usuario_nombre != current_user.get_id():
         return redirect(url_for("ejercicios.lista"))
 
-    clave_str = encode_oid(obj_id)
     resultados = []
 
     # — Recopilar sesiones donde aparece este ejercicio —
     for obj_id_r in srp.load_all_keys(EntrenamientoRealizado):
         ent = srp.load(obj_id_r)
-        if ent.usuario_nombre == current_user.get_id() and clave_str in ent.ejercicios:
-            datos = ent.ejercicios[clave_str]
+        if ent.usuario_nombre == current_user.get_id() and clave in ent.ejercicios:
+            datos = ent.ejercicios[clave]
             series = datos["series"] if isinstance(datos, dict) else datos
 
             resultados.append({
@@ -246,22 +243,19 @@ def ver(clave):
 @login_required
 def eliminar(clave):
     srp = sirope.Sirope()
-    obj_id = decode_oid(clave)
-    ejercicio = srp.load(obj_id)
+    ejercicio = srp.load(decode_oid(clave))
 
     if ejercicio.usuario_nombre != current_user.get_id():
         return redirect(url_for("ejercicios.lista"))
-
-    clave_str = encode_oid(obj_id)
 
     # Eliminar de las plantillas
     for obj_id_p in srp.load_all_keys(Plantilla):
         p = srp.load(obj_id_p)
         if p.usuario_nombre == current_user.get_id():
-            if clave_str in p.ejercicios:
-                del p.ejercicios[clave_str]
-            if clave_str in p.orden:
-                p.orden.remove(clave_str)
+            if clave in p.ejercicios:
+                del p.ejercicios[clave]
+            if clave in p.orden:
+                p.orden.remove(clave)
 
             if not p.ejercicios:
                 srp.delete(obj_id_p)
@@ -271,15 +265,15 @@ def eliminar(clave):
     # Actualizar los entrenamientos realizados que lo contengan
     for obj_id_r in srp.load_all_keys(EntrenamientoRealizado):
         ent = srp.load(obj_id_r)
-        if ent.usuario_nombre == current_user.get_id() and clave_str in ent.ejercicios:
-            original_series = ent.ejercicios[clave_str]
-            ent.ejercicios[clave_str] = {
+        if ent.usuario_nombre == current_user.get_id() and clave in ent.ejercicios:
+            original_series = ent.ejercicios[clave]
+            ent.ejercicios[clave] = {
                 "nombre": ejercicio.nombre,
                 "series": original_series
             }
             srp.save(ent)
 
     # Eliminar el ejercicio
-    srp.delete(obj_id)
+    srp.delete(ejercicio.oid)
 
     return redirect(url_for("ejercicios.lista"))

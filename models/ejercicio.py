@@ -11,13 +11,5 @@ class Ejercicio:
         self.ultimas_series = []  # Lista de dicts con {"peso", "reps"}
 
     @property
-    def nombre(self) -> str:
-        return self._nombre
-    
-    @nombre.setter
-    def nombre(self, valor: str):
-        self._nombre = valor
-
-    @property
     def oid(self) -> str | None:
         return getattr(self, "__oid__", None)
