@@ -1,17 +1,30 @@
-from flask_login import UserMixin
+import flask_login
 from werkzeug.security import generate_password_hash, check_password_hash
 import sirope
 
-class Usuario(UserMixin):
+class Usuario(flask_login.UserMixin):
     def __init__(self, nombre: str, contraseña: str):
-        self.nombre = nombre
+        self._nombre = nombre
         self._contraseña_hash = generate_password_hash(contraseña)
 
-    def comprobar_contraseña(self, contraseña: str) -> bool:
-        return check_password_hash(self._contraseña_hash, contraseña)
+    @property
+    def nombre(self):
+        return self._nombre
 
     def get_id(self) -> str:
         return self.nombre
+    
+    def comprobar_contraseña(self, contraseña: str) -> bool:
+        return check_password_hash(self._contraseña_hash, contraseña)
+
+    @staticmethod
+    def current_user():
+        user = flask_login.current_user
+        if user.is_anonymous:
+            flask_login.logout_user()
+            user = None
+        
+        return user
 
     @staticmethod
     def find(srp: sirope.Sirope, nombre: str) -> "Usuario":
