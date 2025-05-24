@@ -25,8 +25,7 @@ def lista():
     # Ordenar plantillas por fecha de ultima vez realizada y nombre alfabeticamente
     plantillas_usuario.sort(key=lambda tup: tup[1].nombre.lower())
     plantillas_usuario.sort(
-        key=lambda tup: datetime.strptime(tup[1].ultima_vez, "%d/%m/%Y %H:%M:%S")
-                        if tup[1].ultima_vez else datetime.min,
+        key=lambda tup: datetime.strptime(tup[1].ultima_vez, "%d/%m/%Y %H:%M:%S") if tup[1].ultima_vez else datetime.min,
         reverse=True
     )
 

@@ -122,6 +122,24 @@ def generar_entrenamientos_historicos(usuario_nombre: str) -> None:
             )
             srp.save(ent)
 
+            # — Actualizar últimas series de cada ejercicio —
+            for soid, series in ejercicios_payload.items():
+                try:
+                    ej = srp.load(decode_oid(soid))
+                    ej.ultimas_series = series
+                    srp.save(ej)
+                except:
+                    pass
+
+            # — Actualizar última vez de la plantilla origen —
+            try:
+                 p = srp.load(decode_oid(tpl._id))
+                 if p and p.usuario_nombre == usuario_nombre:
+                     p.ultima_vez = fecha.strftime("%d/%m/%Y %H:%M:%S")
+                     srp.save(p)
+            except:
+                 pass
+
         fecha += timedelta(days=1)
         i += 1
 
