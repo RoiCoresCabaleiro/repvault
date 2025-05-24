@@ -34,7 +34,7 @@ def lista():
 
 
 @plantillas_bp.route("/nueva", methods=["GET", "POST"])
-@plantillas_bp.route("/editar/<clave>", methods=["GET", "POST"])
+@plantillas_bp.route("/editar/<soid>", methods=["GET", "POST"])
 @login_required
 def gestionar(clave=None):
     srp     = sirope.Sirope()
