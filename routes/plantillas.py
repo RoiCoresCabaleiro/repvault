@@ -36,7 +36,7 @@ def lista():
 @plantillas_bp.route("/nueva", methods=["GET", "POST"])
 @plantillas_bp.route("/editar/<soid>", methods=["GET", "POST"])
 @login_required
-def gestionar(clave=None):
+def gestionar(soid=None):
     srp     = sirope.Sirope()
     usuario = current_user.get_id()
     plantilla_real = None
@@ -46,14 +46,14 @@ def gestionar(clave=None):
         session.pop("tmp_plantilla", None)
 
     # Si estamos editando, cargamos la plantilla real
-    if clave:
+    if soid:
         try:
-            plantilla_real = srp.load(decode_oid(clave))
+            plantilla_real = srp.load(decode_oid(soid))
         except Exception:
-            return redirect(url_for("plantillas.ver", soid=clave))
+            return redirect(url_for("plantillas.ver", soid=soid))
 
         if not plantilla_real or plantilla_real.usuario_nombre != usuario:
-             return redirect(url_for("plantillas.ver", soid=clave))
+             return redirect(url_for("plantillas.ver", soid=soid))
 
     # Inicializar estado temporal en sesión si no existe
     if "tmp_plantilla" not in session:
@@ -163,8 +163,8 @@ def gestionar(clave=None):
     return render_template(
         "plantillas/gestion_plantillas.html",
         plantilla=plantilla,
-        is_edit=bool(clave),
-        soid=clave,
+        is_edit=bool(soid),
+        soid=soid,
         error=error,
         ejercicios_seleccionados=seleccionados,
         ejercicios_disponibles=disponibles,
