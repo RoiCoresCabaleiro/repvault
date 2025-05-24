@@ -99,55 +99,55 @@
                 </div>
                 
                 <nav class="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-4">
-                    <a href="{{ url_for('home.home') }}" class="tooltip flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Inicio">
+                    <a href="{{ url_for('home.home') }}" class="tooltip flex-shrink-0 flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Inicio">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
-                        <span class="hidden sm:inline ml-1 text-sm font-medium">Inicio</span>
+                        <span class="hidden md:inline ml-1 text-sm font-medium whitespace-nowrap">Inicio</span>
                     </a>
                     
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('ejercicios.lista') }}" class="tooltip flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Ejercicios">
+                        <a href="{{ url_for('ejercicios.lista') }}" class="tooltip flex-shrink-0 flex-shrink-0 flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Ejercicios">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 500.043 500.043" fill="currentColor">
                                 <path d="M114.568,108.812c-15.854,0-28.716,14.544-28.716,32.474c0,54.354,0.01,163.137,0.02,217.471c0,17.93,12.842,32.473,28.697,32.473s28.716-14.553,28.716-32.473c0-21.316,0-51.045,0-82.545c16.553,0,164.713,0,208.874,0c0,31.51,0,61.229,0,82.555c0,17.92,12.861,32.463,28.717,32.463c15.854,0,28.697-14.553,28.697-32.473c0-54.354,0-163.137,0-217.471c0-17.939-12.844-32.474-28.697-32.474c-15.855,0-28.717,14.525-28.717,32.474c0,21.315,0,51.035,0,82.543c-44.178,0-192.321,0-208.874,0c0-31.508,0-61.229,0-82.553C143.285,123.338,130.433,108.812,114.568,108.812z"/>
                                 <path d="M447.602,152.188c-0.938,0-1.865,0-2.811,0c-11.945,0-21.641,9.668-21.641,21.63c0,37.647,0,114.76,0,152.406c0,11.953,9.695,21.65,21.648,21.65c0.938,0,1.885,0,2.812,0c11.953,0,21.648-9.668,21.648-21.631c0-37.637,0-114.759-0.008-152.407C469.26,161.875,459.555,152.188,447.602,152.188z"/>
                                 <path d="M52.116,152.188c-0.937,0-1.884,0-2.821,0c-11.953,0-21.64,9.668-21.64,21.63c0,37.647,0,114.76,0,152.406c0,11.963,9.687,21.65,21.64,21.65c0.937,0,1.884,0,2.811,0c11.953,0,21.64-9.668,21.64-21.631c0-37.637,0-114.759,0-152.407C73.756,161.875,64.069,152.188,52.116,152.188z"/>
                             </svg>
-                            <span class="hidden sm:inline ml-1 text-sm font-medium">Ejercicios</span>
+                            <span class="hidden md:inline ml-1 text-sm font-medium whitespace-nowrap">Ejercicios</span>
                         </a>
                         
-                        <a href="{{ url_for('plantillas.lista') }}" class="tooltip flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Rutinas">
+                        <a href="{{ url_for('plantillas.lista') }}" class="tooltip flex-shrink-0 flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Rutinas">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
-                            <span class="hidden sm:inline ml-1 text-sm font-medium">Rutinas</span>
+                            <span class="hidden md:inline ml-1 text-sm font-medium whitespace-nowrap">Rutinas</span>
                         </a>
                         
-                        <a href="{{ url_for('entrenamientos.historial') }}" class="tooltip flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Historial">
+                        <a href="{{ url_for('entrenamientos.historial') }}" class="tooltip flex-shrink-0 flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-tooltip="Historial">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span class="hidden sm:inline ml-1 text-sm font-medium">Historial</span>
+                            <span class="hidden md:inline ml-1 text-sm font-medium whitespace-nowrap">Historial</span>
                         </a>
                         
                         <form action="{{ url_for('auth.logout') }}" method="GET">
-                            <button type="submit" class="tooltip flex items-center justify-center p-2 rounded-md bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-700 dark:text-red-300 transition-colors" data-tooltip="Cerrar sesión">
+                            <button type="submit" class="tooltip flex-shrink-0 flex items-center justify-center p-2 rounded-md bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-700 dark:text-red-300 transition-colors" data-tooltip="Cerrar sesión">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
-                                <span class="hidden sm:inline ml-1 text-sm font-medium">Cerrar sesión</span>
+                                <span class="hidden md:inline ml-1 text-sm font-medium whitespace-nowrap">Cerrar sesión</span>
                             </button>
                         </form>
                     {% else %}
-                        <a href="{{ url_for('auth.login') }}" class="tooltip flex items-center justify-center p-2 rounded-md bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/30 text-primary-700 dark:text-primary-300 transition-colors" data-tooltip="Iniciar sesión">
+                        <a href="{{ url_for('auth.login') }}" class="tooltip flex-shrink-0 flex items-center justify-center p-2 rounded-md bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/30 text-primary-700 dark:text-primary-300 transition-colors" data-tooltip="Iniciar sesión">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                             </svg>
-                            <span class="hidden sm:inline ml-1 text-sm font-medium">Iniciar sesión</span>
+                            <span class="hidden md:inline ml-1 text-sm font-medium whitespace-nowrap">Iniciar sesión</span>
                         </a>
                     {% endif %}
                     
-                    <button id="theme-toggle" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors">
+                    <button id="theme-toggle" class="flex-shrink-0 flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
