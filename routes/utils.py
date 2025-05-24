@@ -132,13 +132,10 @@ def generar_entrenamientos_historicos(usuario_nombre: str) -> None:
                     pass
 
             # — Actualizar última vez de la plantilla origen —
-            try:
-                 p = srp.load(decode_oid(tpl._id))
-                 if p and p.usuario_nombre == usuario_nombre:
-                     p.ultima_vez = fecha.strftime("%d/%m/%Y %H:%M:%S")
-                     srp.save(p)
-            except:
-                 pass
+            if (i > (dias_hacia_atras - (len(ciclo) + 1))):
+                tpl.ultima_vez = fecha.strftime("%d/%m/%Y %H:%M:%S")
+                srp.save(tpl)
+
 
         fecha += timedelta(days=1)
         i += 1
