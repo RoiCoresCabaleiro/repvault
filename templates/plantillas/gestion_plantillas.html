@@ -15,7 +15,7 @@
         </a>
     </div>
 
-    <form method="POST">
+    <form method="POST" novalidate>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- COLUMNA IZQUIERDA: Datos de la plantilla -->
             <div class="lg:col-span-2">
@@ -54,7 +54,7 @@
                                             
                                             <div class="flex items-center gap-2">
                                                 <label class="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Series:</label>
-                                                <input type="number" name="series_{{ loop.index0 }}" value="{{ plantilla.ejercicios[soid] }}" min="1" 
+                                                <input type="number" name="series_{{ loop.index0 }}" value="{{ plantilla.ejercicios[soid] }}" min="1" max="20"
                                                     class="w-16 px-2 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
                                             </div>
                                             

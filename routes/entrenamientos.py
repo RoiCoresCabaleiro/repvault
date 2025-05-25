@@ -198,7 +198,7 @@ def finalizar():
             error=error
         )
 
-    # — 3) Ahora actualizar las series desde el formulario —
+    # — 3) Actualizar las series desde el formulario —
     for soid, series in entrenamiento.ejercicios.items():
         for i, serie in enumerate(series):
             peso_raw = request.form.get(f"peso_{soid}_{i}", "").strip()
@@ -216,12 +216,19 @@ def finalizar():
             serie["hecha"] = f"hecha_{soid}_{i}" in request.form
 
     # — 4) Filtrar sólo ejercicios con al menos una serie hecha y válida —
-    ejercicios_filtrados = {
-        soid: [s for s in series if s.get("hecha") and s.get("peso") and s.get("reps")] for soid, series in entrenamiento.ejercicios.items()
-    }
+    def serie_valida(s):
+        try:
+            p = float(s["peso"])
+            r = int(s["reps"])
+        except (KeyError, ValueError, TypeError):
+            return False
+        return s.get("hecha") and (0 <= p <= 1000) and (1 <= r <= 100)
+
+    ejercicios_filtrados = {soid: [s for s in series if serie_valida(s)] for soid, series in entrenamiento.ejercicios.items()}
     ejercicios_filtrados = {k: v for k, v in ejercicios_filtrados.items() if v}
 
     if not ejercicios_filtrados:
+        error="Debes completar al menos una serie válida para finalizar el entrenamiento."
         # — Reconstruir contexto —
         ejercicios_usuario, ultimos_valores, grupo_filtro, equipamiento_filtro, ejercicios_disponibles = build_ejercicio_context(srp, entrenamiento)
 
@@ -235,7 +242,7 @@ def finalizar():
             grupo_filtro=grupo_filtro,
             equipamiento_filtro=equipamiento_filtro,
             ultimos_valores=ultimos_valores,
-            error="Debes completar al menos una serie válida para finalizar el entrenamiento."
+            error=error
         )
 
     # — 5) Pasar a histórico con cálculo de duración y últimas series y borrar entrenamiento en curso —
