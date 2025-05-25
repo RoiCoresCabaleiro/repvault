@@ -7,7 +7,8 @@ class EntrenamientoEnCurso:
         self.usuario_nombre = usuario_nombre
         self.plantilla_soid = plantilla_soid  # plantilla de la que se originó para fecha de ultima vez
         
-        self.ejercicios = {}  # dict: clave → lista de series (cada series es un diccionario con "peso", "reps", "hecha")
+        self.ejercicios = {}  # dict: clave(ejercicio) → lista de dicts(series) con {"peso": n, "reps": n, "hecha": t/f)
+        # Se crea a partir de los ejercicios de la plantilla original)
         for clave, num_series in ejercicios_plantilla:
             self.ejercicios[clave] = []
             for _ in range(num_series):
