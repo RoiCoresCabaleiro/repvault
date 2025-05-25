@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(tick, 1000);
   }
 
-  // — 2. VALIDACIÓN & SHAKE DE CHECKBOXES —
+  // — 2. VALIDAR SERIES AL MARCAR CHECKBOX al instante —
   document.querySelectorAll(".custom-checkbox").forEach(cb => {
     cb.addEventListener("change", () => {
       const [, clave, idx] = cb.name.split("_");
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
           setTimeout(() => {
             errorRow.style.display = "none";
             errorDiv.textContent = "";
-          }, 3000);
+          }, 3500);
         }
 
         // 5) limpiar shake y bordes tras 2s
@@ -75,12 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
           cb.classList.remove("checkbox-shake");
           pesoInput.style.border = '';
           repsInput.style.border = '';
-        }, 5000);
+        }, 3500);
       }
     });
   });
 
-  // — 3. DESMARCAR SERIES INVALIDAS: caso vacío y caso fuera de rango —
+  // — 3. DESMARCAR CHECKBOX DE SERIES INVALIDAS al instante —
   document.querySelectorAll('input[name^="peso_"], input[name^="reps_"]').forEach(input => {
     input.addEventListener("input", () => {
       const [, clave, idx] = input.name.split("_");
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
           setTimeout(() => {
             pesoInput.style.border = '';
             repsInput.style.border = '';
-          }, 5000);
+          }, 3500);
           return;
         }
 
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
             repsInput.style.border = '';
             errorRow.style.display = "none";
             errorDiv.textContent = "";
-          }, 3000);
+          }, 3500);
         }
       }
     });

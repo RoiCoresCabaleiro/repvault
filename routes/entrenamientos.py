@@ -106,11 +106,16 @@ def actual():
                     entrenamiento.ejercicios[soid].pop()
 
         # — 6) Validación previa a “Terminar” —
+        error = None
         if "validar" in request.form:
             # Validar nombre
             if not entrenamiento.nombre_plantilla:
                 error = "El nombre del entrenamiento no puede estar vacío."
-            else:
+            elif len(entrenamiento.nombre_plantilla) > 50:
+                error = "El nombre del entrenamiento no puede superar los 50 caracteres."
+            elif entrenamiento.observaciones and len(entrenamiento.observaciones) > 500:
+                error = "Las observaciones no pueden superar los 500 caracteres."
+            if not error:
                 # Validar al menos una serie válida hecha
                 any_done = any(
                     s.get("hecha") and s.get("peso") and s.get("reps")
@@ -163,7 +168,7 @@ def actual():
 @login_required
 def finalizar():
     srp = sirope.Sirope()
-
+    
     # — Cargar y actualizar entrenamiento en curso —
     entrenamiento = None
     for oid in srp.load_all_keys(EntrenamientoEnCurso):
@@ -179,9 +184,14 @@ def finalizar():
     entrenamiento.observaciones = request.form.get("observaciones", entrenamiento.observaciones).strip()
 
     # — 2) Validar nombre no vacío en "guardar definitivo" —
+    error = None
     if not entrenamiento.nombre_plantilla:
         error = "El nombre del entrenamiento no puede estar vacío."
-
+    elif len(entrenamiento.nombre_plantilla) > 50:
+        error = "El nombre del entrenamiento no puede superar los 50 caracteres"
+    elif entrenamiento.observaciones and len(entrenamiento.observaciones) > 500:
+        error = "Las observaciones no pueden superar los 500 caracteres."
+    if error:    
         # — Reconstruir contexto —
         ejercicios_usuario, ultimos_valores, grupo_filtro, equipamiento_filtro, ejercicios_disponibles = build_ejercicio_context(srp, entrenamiento)
 
