@@ -61,7 +61,7 @@ def importar_plantillas_por_defecto(usuario_nombre):
         for item in tpl["ejercicios"]:
             e = srp.find_first(
                 Ejercicio,
-                lambda x: x.usuario_nombre == usuario_nombre and x.nombre == item["nombre_ejercicio"]
+                lambda x: x.is_owner(usuario_nombre) and x.nombre == item["nombre_ejercicio"]
             )
             if not e:
                 continue
@@ -99,7 +99,7 @@ def generar_entrenamientos_historicos(usuario_nombre: str) -> None:
             i += 1
             continue
 
-        tpl = srp.find_first(Plantilla, lambda p: p.usuario_nombre == usuario_nombre and p.nombre.lower() == rutina)
+        tpl = srp.find_first(Plantilla, lambda p: p.is_owner(usuario_nombre) and p.nombre.lower() == rutina)
         if tpl:
             ejercicios_payload = {}
             for soid in tpl.orden:

@@ -16,18 +16,16 @@ plantillas_bp = Blueprint("plantillas", __name__, url_prefix="/plantillas")
 def lista():
     srp = sirope.Sirope()
     plantillas_usuario = []
+
     for oid in srp.load_all_keys(Plantilla):
         p = srp.load(oid)
-        if p.usuario_nombre == current_user.get_id():
+        if p.is_owner(current_user.get_id()):
             clave = encode_oid(oid)
             plantillas_usuario.append((clave, p))
 
     # Ordenar plantillas por fecha de ultima vez realizada y nombre alfabeticamente
     plantillas_usuario.sort(key=lambda tup: tup[1].nombre.lower())
-    plantillas_usuario.sort(
-        key=lambda tup: datetime.strptime(tup[1].ultima_vez, "%d/%m/%Y %H:%M:%S") if tup[1].ultima_vez else datetime.min,
-        reverse=True
-    )
+    plantillas_usuario.sort(key=lambda tup: datetime.strptime(tup[1].ultima_vez, "%d/%m/%Y %H:%M:%S") if tup[1].ultima_vez else datetime.min, reverse=True)
 
     return render_template("plantillas/lista.html", plantillas=plantillas_usuario)
 
@@ -37,7 +35,6 @@ def lista():
 @login_required
 def gestionar(soid=None):
     srp     = sirope.Sirope()
-    usuario = current_user.get_id()
     plantilla_real = None
 
     # Si es GET “puro” (sin filtrar), reiniciamos el estado temporal
@@ -51,7 +48,7 @@ def gestionar(soid=None):
         except Exception:
             return redirect(url_for("plantillas.ver", soid=soid))
 
-        if not plantilla_real or plantilla_real.usuario_nombre != usuario:
+        if not plantilla_real or not plantilla_real.is_owner(current_user.get_id()):
              return redirect(url_for("plantillas.ver", soid=soid))
 
     # Inicializar estado temporal en sesión si no existe
@@ -124,7 +121,7 @@ def gestionar(soid=None):
                 original_oid = plantilla_real.oid if plantilla_real else None
                 for oid_chk in srp.load_all_keys(Plantilla):
                     p = srp.load(oid_chk)
-                    if (p.usuario_nombre == usuario and
+                    if (p.is_owner(current_user.get_id()) and
                         p.nombre.lower() == data["nombre"].lower() and
                         (not original_oid or oid_chk != original_oid)):
                         error = "Ya tienes una plantilla con ese nombre."
@@ -140,7 +137,7 @@ def gestionar(soid=None):
                     srp.save(plantilla_real)
                 else:
                     # Crear nueva plantilla
-                    nueva = Plantilla(data["nombre"], data["observaciones"], usuario)
+                    nueva = Plantilla(data["nombre"], data["observaciones"], current_user.get_id())
                     nueva.orden      = data["orden"]
                     nueva.ejercicios = data["ejercicios"]
                     srp.save(nueva)
@@ -152,7 +149,7 @@ def gestionar(soid=None):
         session["tmp_plantilla"] = data
 
     # Preparar objeto Plantilla para la vista
-    plantilla = Plantilla(data["nombre"], data["observaciones"], usuario)
+    plantilla = Plantilla(data["nombre"], data["observaciones"], current_user.get_id())
     plantilla.orden      = data["orden"]
     plantilla.ejercicios = data["ejercicios"]
 
@@ -179,7 +176,7 @@ def calcular_seleccionados(plantilla):
     for clave in plantilla.orden:
         try:
             e = srp.load(decode_oid(clave))
-            if e and e.usuario_nombre == current_user.get_id():
+            if e and e.is_owner(current_user.get_id()):
                 seleccionados.append((clave, e))
         except:
             continue
@@ -192,7 +189,7 @@ def calcular_disponibles(plantilla, grupo_filtro, equipamiento_filtro):
 
     for oid in srp.load_all_keys(Ejercicio):
         e = srp.load(oid)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             clave = encode_oid(oid)
             if clave not in claves_seleccionadas and \
                (not grupo_filtro or e.grupo_muscular == grupo_filtro) and \
@@ -209,14 +206,14 @@ def ver(clave):
     srp = sirope.Sirope()
     plantilla = srp.load(decode_oid(clave))
 
-    if plantilla.usuario_nombre != current_user.get_id():
+    if not plantilla.is_owner(current_user.get_id()):
         return redirect(url_for("plantillas.lista"))
 
     # Obtener todos los ejercicios del usuario
     ejercicios_usuario = []
     for oid_e in srp.load_all_keys(Ejercicio):
         e = srp.load(oid_e)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             clave_ej = encode_oid(oid_e)
             ejercicios_usuario.append((clave_ej, e))
 
@@ -229,7 +226,7 @@ def eliminar(clave):
     srp = sirope.Sirope()
     plantilla = srp.load(decode_oid(clave))
 
-    if plantilla and plantilla.usuario_nombre == current_user.get_id():
+    if plantilla and plantilla.is_owner(current_user.get_id()):
         srp.delete(plantilla.oid)
 
     return redirect(url_for("plantillas.lista"))

@@ -19,13 +19,13 @@ def iniciar(clave):
     srp = sirope.Sirope()
     plantilla = srp.load(decode_oid(clave))
 
-    if plantilla.usuario_nombre != current_user.get_id():
+    if not plantilla.is_owner(current_user.get_id()):
         return redirect(url_for("plantillas.lista"))
 
     # Eliminar previo en curso
     for oid_exist in srp.load_all_keys(EntrenamientoEnCurso):
         e = srp.load(oid_exist)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             srp.delete(oid_exist)
 
     nuevo = EntrenamientoEnCurso(
@@ -51,7 +51,7 @@ def actual():
     entrenamiento = None
     for oid in srp.load_all_keys(EntrenamientoEnCurso):
         e = srp.load(oid)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             entrenamiento = e
             break
     if not entrenamiento:
@@ -168,7 +168,7 @@ def finalizar():
     entrenamiento = None
     for oid in srp.load_all_keys(EntrenamientoEnCurso):
         e = srp.load(oid)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             entrenamiento = e
             break
     if not entrenamiento:
@@ -257,7 +257,7 @@ def finalizar():
     # — Actualizar última vez de la plantilla origen — 
     try:
         p = srp.load(decode_oid(entrenamiento.plantilla_soid))
-        if p and p.usuario_nombre == current_user.get_id():
+        if p and p.is_owner(current_user.get_id()):
             p.ultima_vez = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             srp.save(p)
     except:
@@ -282,7 +282,7 @@ def build_ejercicio_context(srp, entrenamiento):
     ejercicios_usuario = []
     for oid in srp.load_all_keys(Ejercicio):
         e = srp.load(oid)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             ejercicios_usuario.append((encode_oid(oid), e))
     ejercicios_usuario.sort(key=lambda x: x[1].nombre.lower())
 
@@ -318,7 +318,7 @@ def cancelar():
     srp = sirope.Sirope()
     for oid in srp.load_all_keys(EntrenamientoEnCurso):
         e = srp.load(oid)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             srp.delete(oid)
             break
 
@@ -333,7 +333,7 @@ def historial():
     realizados = []
     for oid in srp.load_all_keys(EntrenamientoRealizado):
         e = srp.load(oid)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             realizados.append(e)
 
     #Ordenar por fecha (más reciente primero)
@@ -349,7 +349,7 @@ def historial():
     ejercicios_nombres = {}
     for oid in srp.load_all_keys(Ejercicio):
         e = srp.load(oid)
-        if e.usuario_nombre == current_user.get_id():
+        if e.is_owner(current_user.get_id()):
             ejercicios_nombres[encode_oid(oid)] = e.nombre
 
     # Obtener mes y año desde GET, o usar los actuales

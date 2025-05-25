@@ -9,6 +9,7 @@ from models.entrenamiento_realizado import EntrenamientoRealizado
 home_bp = Blueprint("home", __name__, url_prefix="")
 
 
+
 @home_bp.route("/")
 def home():
     if current_user.is_authenticated:
@@ -30,7 +31,7 @@ def dashboard():
     sesiones_rango = []
     for oid in srp.load_all_keys(EntrenamientoRealizado):
         ent = srp.load(oid)
-        if ent.usuario_nombre != current_user.get_id():
+        if not ent.is_owner(current_user.get_id()):
             continue
         fecha_dt = datetime.strptime(ent.fecha, "%d/%m/%Y %H:%M:%S").date()
         if fecha_dt >= ocho_semanas_atras:

@@ -11,3 +11,6 @@ class EntrenamientoRealizado:
     @property
     def oid(self) -> str | None:
         return getattr(self, "__oid__", None)
+    
+    def is_owner(self, usuario_nombre: str) -> bool:
+        return self.usuario_nombre == usuario_nombre
