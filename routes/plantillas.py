@@ -45,7 +45,7 @@ def gestionar(soid=None):
     if soid:
         try:
             plantilla_real = srp.load(decode_oid(soid))
-        except Exception:
+        except (AttributeError, ValueError, NameError):
             return redirect(url_for("plantillas.ver", soid=soid))
 
         if not plantilla_real or not plantilla_real.is_owner(current_user.get_id()):
@@ -113,10 +113,11 @@ def gestionar(soid=None):
         elif "guardar" in request.form or "guardar_cambios" in request.form:
             # Validaciones básicas
             if not data["nombre"]:
-                error = "El nombre de la plantilla no puede estar vacío."
-            elif not data["ejercicios"]:
-                error = "Debes seleccionar al menos un ejercicio."
-            else:
+                error = "El nombre de la rutina no puede estar vacío."
+            elif len(data["nombre"]) > 50:
+                error = "El nombre de la rutina no puede superar los 50 caracteres"
+
+            if not error:
                 # Comprobar duplicados (excluyendo la propia al editar)
                 original_oid = plantilla_real.oid if plantilla_real else None
                 for oid_chk in srp.load_all_keys(Plantilla):
@@ -125,6 +126,16 @@ def gestionar(soid=None):
                         p.nombre.lower() == data["nombre"].lower() and
                         (not original_oid or oid_chk != original_oid)):
                         error = "Ya tienes una plantilla con ese nombre."
+                        break
+
+            if not error and len(data["observaciones"]) > 500:
+                error = "Las observaciones de la rutina no pueden superar los 500 caracteres"
+            if not error and not data["ejercicios"]:
+                error = "Debes seleccionar al menos un ejercicio."
+            if not error:
+                for soid_sel, v in data["ejercicios"].items():
+                    if not isinstance(v, int) or not (1 <= v <= 20):
+                        error = "Cada ejercicio debe tener entre 1 y 20 series."
                         break
 
             if not error:
@@ -178,7 +189,7 @@ def calcular_seleccionados(plantilla):
             e = srp.load(decode_oid(clave))
             if e and e.is_owner(current_user.get_id()):
                 seleccionados.append((clave, e))
-        except:
+        except (AttributeError, ValueError, NameError):
             continue
     return seleccionados
 

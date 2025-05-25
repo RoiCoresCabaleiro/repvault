@@ -130,7 +130,7 @@ def generar_entrenamientos_historicos(usuario_nombre: str) -> None:
                         ej = srp.load(decode_oid(soid))
                         ej.ultimas_series = series
                         srp.save(ej)
-                    except:
+                    except (ValueError, NameError, AttributeError, TypeError):
                         pass
 
                 # — Actualizar última vez de la plantilla origen —

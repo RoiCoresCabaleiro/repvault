@@ -22,6 +22,9 @@ def lista():
     grupo_filtro = request.args.get("grupo_muscular", "")
     equipamiento_filtro = request.args.get("equipamiento", "")
 
+    if grupo_filtro not in GRUPOS_VALIDOS: grupo_filtro = ""
+    if equipamiento_filtro not in EQUIPAMIENTOS_VALIDOS: equipamiento_filtro = ""
+
     for obj_id in srp.load_all_keys(Ejercicio):
         ejercicio = srp.load(obj_id)
         if ejercicio.is_owner(current_user.get_id()):
@@ -47,7 +50,7 @@ def gestionar(clave=None):
     if clave:
         try:
             existente = srp.load(decode_oid(clave))
-        except Exception:
+        except (AttributeError, ValueError, NameError):
             return redirect(url_for("ejercicios.ver", clave=clave))
 
         if not existente or not existente.is_owner(current_user.get_id()):
@@ -72,6 +75,10 @@ def gestionar(clave=None):
         # Validaciones
         if not nombre:
             error = "Debes introducir un nombre."
+        elif len(nombre) > 60:
+            error = "El nombre no puede superar los 60 caracteres."
+        elif descripcion and len(descripcion) > 300:
+            error = "La descripción no puede superar los 300 caracteres."
         
         if not error:
             dup = srp.find_first(Ejercicio, lambda e: e.is_owner(current_user.get_id()) and e.nombre.lower() == nombre.lower() and (not existente or e.oid != existente.oid))
@@ -124,8 +131,12 @@ def gestionar(clave=None):
 @login_required
 def ver(clave):
     srp = sirope.Sirope()
-    ejercicio = srp.load(decode_oid(clave))
 
+    try:
+        ejercicio = srp.load(decode_oid(clave))
+    except (AttributeError, ValueError, NameError):
+        return redirect(url_for("ejercicios.lista"))
+    
     if not ejercicio.is_owner(current_user.get_id()):
         return redirect(url_for("ejercicios.lista"))
 
@@ -154,7 +165,7 @@ def ver(clave):
             try:
                 peso = float(s["peso"])
                 reps = int(s["reps"])
-            except:
+            except (KeyError, ValueError, TypeError):
                 continue
             flat.append({
                 "peso":   peso,
@@ -242,7 +253,11 @@ def ver(clave):
 @login_required
 def eliminar(clave):
     srp = sirope.Sirope()
-    ejercicio = srp.load(decode_oid(clave))
+    
+    try:
+        ejercicio = srp.load(decode_oid(clave))
+    except (AttributeError, ValueError, NameError):
+        return redirect(url_for("ejercicios.lista"))
 
     if not ejercicio.is_owner(current_user.get_id()):
         return redirect(url_for("ejercicios.lista"))

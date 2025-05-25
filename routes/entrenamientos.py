@@ -73,11 +73,11 @@ def actual():
                 try:
                     p = round(float(peso_raw), 2)
                     serie["peso"] = str(int(p)) if p.is_integer() else f"{p:.2f}"
-                except:
+                except (ValueError, TypeError):
                     serie["peso"] = ""
                 try:
                     serie["reps"] = int(reps_raw)
-                except:
+                except (ValueError, TypeError):
                     serie["reps"] = ""
                 serie["hecha"] = f"hecha_{soid}_{i}" in request.form
 
@@ -206,19 +206,18 @@ def finalizar():
             try:
                 p = round(float(peso_raw), 2)
                 serie["peso"] = str(int(p)) if p.is_integer() else f"{p:.2f}"
-            except:
+            except (ValueError, TypeError):
                 serie["peso"] = ""
             try:
                 serie["reps"] = int(reps_raw)
-            except:
+            except (ValueError, TypeError):
                 serie["reps"] = ""
 
             serie["hecha"] = f"hecha_{soid}_{i}" in request.form
 
     # — 4) Filtrar sólo ejercicios con al menos una serie hecha y válida —
     ejercicios_filtrados = {
-        soid: [s for s in series if s.get("hecha") and s.get("peso") and s.get("reps")]
-        for soid, series in entrenamiento.ejercicios.items()
+        soid: [s for s in series if s.get("hecha") and s.get("peso") and s.get("reps")] for soid, series in entrenamiento.ejercicios.items()
     }
     ejercicios_filtrados = {k: v for k, v in ejercicios_filtrados.items() if v}
 
@@ -260,7 +259,7 @@ def finalizar():
         if p and p.is_owner(current_user.get_id()):
             p.ultima_vez = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             srp.save(p)
-    except:
+    except (ValueError, NameError, AttributeError):
         pass
 
     # — Actualizar últimas series de cada ejercicio —
@@ -269,7 +268,7 @@ def finalizar():
             ej = srp.load(decode_oid(soid))
             ej.ultimas_series = ejercicios_filtrados[soid]
             srp.save(ej)
-        except:
+        except (ValueError, NameError, AttributeError):
             pass
 
     srp.delete(entrenamiento.oid)
@@ -292,7 +291,7 @@ def build_ejercicio_context(srp, entrenamiento):
         try:
             ej = srp.load(decode_oid(soid))
             ultimos_valores[soid] = getattr(ej, "ultimas_series", [])
-        except:
+        except (ValueError, NameError, AttributeError):
             ultimos_valores[soid] = []
 
     # — 3) Capturar filtros —
@@ -358,7 +357,7 @@ def historial():
         año = int(request.args.get("año", 0))
         if not 1 <= mes <= 12:
             raise ValueError
-    except:
+    except (ValueError, TypeError):
         hoy = datetime.today()
         mes, año = hoy.month, hoy.year
 
@@ -371,7 +370,7 @@ def historial():
             dt = datetime.strptime(f_str, "%d/%m/%Y")
             if dt.year == año and dt.month == mes:
                 dias_con_entreno.add(dt.day)
-        except:
+        except (ValueError, TypeError):
             pass
 
     # Calcular día de la semana del 1er día (0=lunes, 6=domingo)
