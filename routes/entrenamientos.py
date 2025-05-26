@@ -7,7 +7,7 @@ from calendar import monthrange
 from models.ejercicio import Ejercicio
 from models.entrenamiento_en_curso import EntrenamientoEnCurso
 from models.entrenamiento_realizado import EntrenamientoRealizado
-from routes.utils import encode_oid, decode_oid, GRUPOS_VALIDOS, EQUIPAMIENTOS_VALIDOS
+from routes.utils import encode_oid, decode_oid, GRUPOS_VALIDOS, EQUIPAMIENTOS_VALIDOS, build_ejercicio_context
 
 entrenamientos_bp = Blueprint("entrenamientos", __name__, url_prefix="/entrenamiento")
 
@@ -22,12 +22,14 @@ def iniciar(clave):
     if not plantilla.is_owner(current_user.get_id()):
         return redirect(url_for("plantillas.lista"))
 
-    # Eliminar previo en curso
-    for oid_exist in srp.load_all_keys(EntrenamientoEnCurso):
-        e = srp.load(oid_exist)
-        if e.is_owner(current_user.get_id()):
-            srp.delete(oid_exist)
+    # Eliminar posibles entrenamientos en curso existentes (erroneos)
+    for ent in srp.filter(
+        EntrenamientoEnCurso,
+        lambda e: e.is_owner(current_user.get_id())
+    ):
+        srp.delete(ent.oid)
 
+    # Crear nuevo entrenamiento en curso a partir de la plantilla
     nuevo = EntrenamientoEnCurso(
         usuario_nombre=current_user.get_id(),
         plantilla_soid=clave,
@@ -36,6 +38,7 @@ def iniciar(clave):
         ejercicios_plantilla=[(soid, plantilla.ejercicios[soid]) for soid in plantilla.orden]
     )
     srp.save(nuevo)
+
     return redirect(url_for("entrenamientos.actual"))
 
 
@@ -48,12 +51,10 @@ def actual():
     show_confirm = False
 
     # — Cargar en curso —
-    entrenamiento = None
-    for oid in srp.load_all_keys(EntrenamientoEnCurso):
-        e = srp.load(oid)
-        if e.is_owner(current_user.get_id()):
-            entrenamiento = e
-            break
+    entrenamiento = srp.find_first(
+        EntrenamientoEnCurso,
+        lambda e: e.is_owner(current_user.get_id())
+    )
     if not entrenamiento:
         return redirect(url_for("home.home"))
 
@@ -170,12 +171,10 @@ def finalizar():
     srp = sirope.Sirope()
     
     # — Cargar y actualizar entrenamiento en curso —
-    entrenamiento = None
-    for oid in srp.load_all_keys(EntrenamientoEnCurso):
-        e = srp.load(oid)
-        if e.is_owner(current_user.get_id()):
-            entrenamiento = e
-            break
+    entrenamiento = srp.find_first(
+        EntrenamientoEnCurso,
+        lambda e: e.is_owner(current_user.get_id())
+    )
     if not entrenamiento:
         return redirect(url_for("home.home"))
 
@@ -283,51 +282,18 @@ def finalizar():
         pass
 
     # — Actualizar últimas series de cada ejercicio —
-    for soid in ejercicios_filtrados:
-        try:
-            ej = srp.load(decode_oid(soid))
-            ej.ultimas_series = ejercicios_filtrados[soid]
-            srp.save(ej)
-        except (ValueError, NameError, AttributeError):
-            pass
-
+    ej_oids = [decode_oid(soid) for soid in ejercicios_filtrados]
+    ej_iter = srp.multi_load(ej_oids)
+    
+    for soid, ejercicio in zip(ejercicios_filtrados, ej_iter):
+        if ejercicio:
+            ejercicio.ultimas_series = ejercicios_filtrados[soid]
+            srp.save(ejercicio)
+    
+    # — Borrar entrenamiento en curso —
     srp.delete(entrenamiento.oid)
+
     return redirect(url_for("entrenamientos.historial"))
-
-
-# — Metodo auxiliar para reconstruir listas y filtros de ejercicios en actual() y finalizar() —
-def build_ejercicio_context(srp, entrenamiento):
-    # — 1) Ejercicios del usuario —
-    ejercicios_usuario = []
-    for oid in srp.load_all_keys(Ejercicio):
-        e = srp.load(oid)
-        if e.is_owner(current_user.get_id()):
-            ejercicios_usuario.append((encode_oid(oid), e))
-    ejercicios_usuario.sort(key=lambda x: x[1].nombre.lower())
-
-    # — 2) Últimas series —
-    ultimos_valores = {}
-    for soid in entrenamiento.ejercicios:
-        try:
-            ej = srp.load(decode_oid(soid))
-            ultimos_valores[soid] = getattr(ej, "ultimas_series", [])
-        except (ValueError, NameError, AttributeError):
-            ultimos_valores[soid] = []
-
-    # — 3) Capturar filtros —
-    grupo_filtro        = request.values.get("grupo_muscular", "")
-    equipamiento_filtro = request.values.get("equipamiento", "")
-
-    # — 4) Filtrar disponibles —
-    actuales = set(entrenamiento.ejercicios.keys())
-    ejercicios_disponibles = [
-        (soid, ej) for soid, ej in ejercicios_usuario
-        if soid not in actuales
-           and (not grupo_filtro or ej.grupo_muscular == grupo_filtro)
-           and (not equipamiento_filtro or ej.equipamiento == equipamiento_filtro)
-    ]
-
-    return ejercicios_usuario, ultimos_valores, grupo_filtro, equipamiento_filtro, ejercicios_disponibles
 
 
 
@@ -335,11 +301,13 @@ def build_ejercicio_context(srp, entrenamiento):
 @login_required
 def cancelar():
     srp = sirope.Sirope()
-    for oid in srp.load_all_keys(EntrenamientoEnCurso):
-        e = srp.load(oid)
-        if e.is_owner(current_user.get_id()):
-            srp.delete(oid)
-            break
+
+    ent = srp.find_first(
+        EntrenamientoEnCurso,
+        lambda e: e.is_owner(current_user.get_id())
+    )
+    if ent:
+        srp.delete(ent.oid)
 
     return redirect(url_for("plantillas.lista"))
 
@@ -349,14 +317,16 @@ def cancelar():
 @login_required
 def historial():
     srp = sirope.Sirope()
-    realizados = []
-    for oid in srp.load_all_keys(EntrenamientoRealizado):
-        e = srp.load(oid)
-        if e.is_owner(current_user.get_id()):
-            realizados.append(e)
 
-    #Ordenar por fecha (más reciente primero)
-    realizados.sort(key=lambda x: datetime.strptime(x.fecha, "%d/%m/%Y %H:%M:%S"), reverse=True)
+    # Cargar entrenamientos realizados y ordenar por fecha (más reciente primero)
+    realizados = sorted(
+        srp.filter(
+            EntrenamientoRealizado,
+            lambda e: e.is_owner(current_user.get_id())
+        ),
+        key=lambda x: datetime.strptime(x.fecha, "%d/%m/%Y %H:%M:%S"),
+        reverse=True
+    )
 
     # Agrupar por día
     agrupados = {}
@@ -365,11 +335,13 @@ def historial():
         agrupados.setdefault(fecha_sola, []).append(ent)
 
     # Nombres de ejercicios activos
-    ejercicios_nombres = {}
-    for oid in srp.load_all_keys(Ejercicio):
-        e = srp.load(oid)
-        if e.is_owner(current_user.get_id()):
-            ejercicios_nombres[encode_oid(oid)] = e.nombre
+    ejercicios_nombres = {
+        encode_oid(e.oid): e.nombre
+        for e in srp.filter(
+            Ejercicio,
+            lambda e: e.is_owner(current_user.get_id())
+        )
+    }
 
     # Obtener mes y año desde GET, o usar los actuales
     try:

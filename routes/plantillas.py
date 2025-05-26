@@ -5,7 +5,7 @@ from datetime import datetime
 
 from models.plantilla import Plantilla
 from models.ejercicio import Ejercicio
-from routes.utils import encode_oid, decode_oid, GRUPOS_VALIDOS, EQUIPAMIENTOS_VALIDOS
+from routes.utils import encode_oid, decode_oid, GRUPOS_VALIDOS, EQUIPAMIENTOS_VALIDOS, calcular_ejs_seleccionados, calcular_ejs_disponibles
 
 plantillas_bp = Blueprint("plantillas", __name__, url_prefix="/plantillas")
 
@@ -15,19 +15,19 @@ plantillas_bp = Blueprint("plantillas", __name__, url_prefix="/plantillas")
 @login_required
 def lista():
     srp = sirope.Sirope()
-    plantillas_usuario = []
 
-    for oid in srp.load_all_keys(Plantilla):
-        p = srp.load(oid)
-        if p.is_owner(current_user.get_id()):
-            clave = encode_oid(oid)
-            plantillas_usuario.append((clave, p))
+    ej_objs = srp.filter(
+        Plantilla,
+        lambda p: p.is_owner(current_user.get_id())
+    )
+    plantillas_usuario = [(encode_oid(p.oid), p) for p in ej_objs]
 
     # Ordenar plantillas por fecha de ultima vez realizada y nombre alfabeticamente
-    plantillas_usuario.sort(key=lambda tup: tup[1].nombre.lower())
-    plantillas_usuario.sort(key=lambda tup: datetime.strptime(tup[1].ultima_vez, "%d/%m/%Y %H:%M:%S") if tup[1].ultima_vez else datetime.min, reverse=True)
+    plantillas_usuario.sort(key=lambda x: x[1].nombre.lower())
+    plantillas_usuario.sort(key=lambda x: datetime.strptime(x[1].ultima_vez, "%d/%m/%Y %H:%M:%S") if x[1].ultima_vez else datetime.min, reverse=True)
 
     return render_template("plantillas/lista.html", plantillas=plantillas_usuario)
+
 
 
 @plantillas_bp.route("/nueva", methods=["GET", "POST"])
@@ -41,13 +41,14 @@ def gestionar(soid=None):
     if request.method == "GET" and "filtrar" not in request.args:
         session.pop("tmp_plantilla", None)
 
-    # Si estamos editando, cargamos la plantilla real
+    # Si estamos editando, cargar plantilla existente
     if soid:
         try:
-            plantilla_real = srp.load(decode_oid(soid))
+            oid = decode_oid(soid)
         except (AttributeError, ValueError, NameError):
             return redirect(url_for("plantillas.ver", soid=soid))
-
+        
+        plantilla_real = srp.load(oid)
         if not plantilla_real or not plantilla_real.is_owner(current_user.get_id()):
              return redirect(url_for("plantillas.ver", soid=soid))
 
@@ -117,16 +118,19 @@ def gestionar(soid=None):
             elif len(data["nombre"]) > 50:
                 error = "El nombre de la rutina no puede superar los 50 caracteres"
 
+            # Comprobar duplicados (excluyendo la propia al editar)
             if not error:
-                # Comprobar duplicados (excluyendo la propia al editar)
                 original_oid = plantilla_real.oid if plantilla_real else None
-                for oid_chk in srp.load_all_keys(Plantilla):
-                    p = srp.load(oid_chk)
-                    if (p.is_owner(current_user.get_id()) and
-                        p.nombre.lower() == data["nombre"].lower() and
-                        (not original_oid or oid_chk != original_oid)):
-                        error = "Ya tienes una plantilla con ese nombre."
-                        break
+                dup = srp.find_first(
+                    Plantilla,
+                    lambda p: (
+                        p.is_owner(current_user.get_id())
+                        and p.nombre.lower() == data["nombre"].lower()
+                        and (not original_oid or p.oid != original_oid)
+                    )
+                )
+                if dup:
+                    error = "Ya tienes una plantilla con ese nombre."
 
             if not error and len(data["observaciones"]) > 500:
                 error = "Las observaciones de la rutina no pueden superar los 500 caracteres"
@@ -164,8 +168,8 @@ def gestionar(soid=None):
     plantilla.orden      = data["orden"]
     plantilla.ejercicios = data["ejercicios"]
 
-    seleccionados = calcular_seleccionados(plantilla)
-    disponibles  = calcular_disponibles(plantilla, grupo_filtro, equipamiento_filtro)
+    seleccionados = calcular_ejs_seleccionados(plantilla)
+    disponibles  = calcular_ejs_disponibles(plantilla, grupo_filtro, equipamiento_filtro)
 
     return render_template(
         "plantillas/gestion_plantillas.html",
@@ -181,34 +185,6 @@ def gestionar(soid=None):
         equipamiento_filtro=equipamiento_filtro
     )
 
-def calcular_seleccionados(plantilla):
-    srp = sirope.Sirope()
-    seleccionados = []
-    for clave in plantilla.orden:
-        try:
-            e = srp.load(decode_oid(clave))
-            if e and e.is_owner(current_user.get_id()):
-                seleccionados.append((clave, e))
-        except (AttributeError, ValueError, NameError):
-            continue
-    return seleccionados
-
-def calcular_disponibles(plantilla, grupo_filtro, equipamiento_filtro):
-    srp = sirope.Sirope()
-    disponibles = []
-    claves_seleccionadas = set(plantilla.ejercicios.keys())
-
-    for oid in srp.load_all_keys(Ejercicio):
-        e = srp.load(oid)
-        if e.is_owner(current_user.get_id()):
-            clave = encode_oid(oid)
-            if clave not in claves_seleccionadas and \
-               (not grupo_filtro or e.grupo_muscular == grupo_filtro) and \
-               (not equipamiento_filtro or e.equipamiento == equipamiento_filtro):
-                disponibles.append((clave, e))
-
-    disponibles.sort(key=lambda x: x[1].nombre.lower())
-    return disponibles
 
 
 @plantillas_bp.route("/ver/<path:clave>")
@@ -221,14 +197,14 @@ def ver(clave):
         return redirect(url_for("plantillas.lista"))
 
     # Obtener todos los ejercicios del usuario
-    ejercicios_usuario = []
-    for oid_e in srp.load_all_keys(Ejercicio):
-        e = srp.load(oid_e)
-        if e.is_owner(current_user.get_id()):
-            clave_ej = encode_oid(oid_e)
-            ejercicios_usuario.append((clave_ej, e))
+    ej_objs = srp.filter(
+        Ejercicio,
+        lambda e: e.is_owner(current_user.get_id())
+    )
+    ejercicios_usuario = [(encode_oid(e.oid), e) for e in ej_objs]
 
     return render_template("plantillas/ver.html", plantilla=plantilla, ejercicios=ejercicios_usuario, clave=clave, orden=plantilla.orden)
+
 
 
 @plantillas_bp.route("/eliminar/<path:clave>", methods=["GET", "POST"])

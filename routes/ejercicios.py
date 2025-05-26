@@ -16,7 +16,6 @@ ejercicios_bp = Blueprint("ejercicios", __name__, url_prefix="/ejercicios")
 @login_required
 def lista():
     srp = sirope.Sirope()
-    ejercicios_usuario = []
 
     # Capturar filtros
     grupo_filtro = request.args.get("grupo_muscular", "")
@@ -25,14 +24,15 @@ def lista():
     if grupo_filtro not in GRUPOS_VALIDOS: grupo_filtro = ""
     if equipamiento_filtro not in EQUIPAMIENTOS_VALIDOS: equipamiento_filtro = ""
 
-    for obj_id in srp.load_all_keys(Ejercicio):
-        ejercicio = srp.load(obj_id)
-        if ejercicio.is_owner(current_user.get_id()):
-            if (not grupo_filtro or ejercicio.grupo_muscular == grupo_filtro) and (not equipamiento_filtro or ejercicio.equipamiento == equipamiento_filtro):
-                clave = encode_oid(obj_id)
-                ejercicios_usuario.append((clave, ejercicio))
-
-    ejercicios_usuario.sort(key=lambda x: x[1].nombre.lower())
+    ej_objs = srp.filter(
+        Ejercicio,
+        lambda e: (
+            e.is_owner(current_user.get_id())
+            and (not grupo_filtro or e.grupo_muscular == grupo_filtro)
+            and (not equipamiento_filtro or e.equipamiento == equipamiento_filtro)
+        )
+    )    
+    ejercicios_usuario = sorted([(encode_oid(e.oid), e) for e in ej_objs], key=lambda x: x[1].nombre.lower())
 
     return render_template("ejercicios/lista.html", ejercicios=ejercicios_usuario, grupo_filtro=grupo_filtro, equipamiento_filtro=equipamiento_filtro, grupos_validos=GRUPOS_VALIDOS, equipamientos_validos=EQUIPAMIENTOS_VALIDOS)
 
@@ -81,7 +81,12 @@ def gestionar(clave=None):
             error = "La descripción no puede superar los 300 caracteres."
         
         if not error:
-            dup = srp.find_first(Ejercicio, lambda e: e.is_owner(current_user.get_id()) and e.nombre.lower() == nombre.lower() and (not existente or e.oid != existente.oid))
+            dup = srp.find_first(
+                Ejercicio,
+                lambda e: e.is_owner(current_user.get_id())
+                and e.nombre.lower() == nombre.lower()
+                and (not existente or e.oid != existente.oid)
+            )
             if dup:
                 error = "Ya tienes otro ejercicio con ese nombre."
 
@@ -143,18 +148,19 @@ def ver(clave):
     resultados = []
 
     # — Recopilar sesiones donde aparece este ejercicio —
-    for obj_id_r in srp.load_all_keys(EntrenamientoRealizado):
-        ent = srp.load(obj_id_r)
-        if ent.is_owner(current_user.get_id()) and clave in ent.ejercicios:
-            datos = ent.ejercicios[clave]
-            series = datos["series"] if isinstance(datos, dict) else datos
+    for ent in srp.filter(
+        EntrenamientoRealizado,
+        lambda ent: ent.is_owner(current_user.get_id()) and clave in ent.ejercicios
+    ):
+        datos = ent.ejercicios[clave]
+        series = datos["series"] if isinstance(datos, dict) else datos
 
-            resultados.append({
-                "fecha":           ent.fecha,
-                "entrenamiento":   ent.nombre,
-                "observaciones":   ent.observaciones,
-                "series":          series
-            })
+        resultados.append({
+            "fecha":           ent.fecha,
+            "entrenamiento":   ent.nombre,
+            "observaciones":   ent.observaciones,
+            "series":          series
+        })
 
     resultados.sort(key=lambda x: datetime.strptime(x["fecha"], "%d/%m/%Y %H:%M:%S"), reverse=True)
 
@@ -262,32 +268,36 @@ def eliminar(clave):
     if not ejercicio.is_owner(current_user.get_id()):
         return redirect(url_for("ejercicios.lista"))
 
-    # Eliminar de las plantillas
-    for obj_id_p in srp.load_all_keys(Plantilla):
-        p = srp.load(obj_id_p)
-        if p.is_owner(current_user.get_id()):
-            if clave in p.ejercicios:
-                del p.ejercicios[clave]
-            if clave in p.orden:
-                p.orden.remove(clave)
+    # Eliminar de las plantillas que lo contengan
+    for plant in srp.filter(
+        Plantilla,
+        lambda p: p.is_owner(current_user.get_id()) and clave in p.ejercicios
+    ):
+        # Borrar el ejercicio de la plantilla
+        del plant.ejercicios[clave]
+        if clave in plant.orden:
+            plant.orden.remove(clave)
 
-            if not p.ejercicios:
-                srp.delete(obj_id_p)
-            else:
-                srp.save(p)
+        # Si la plantilla queda vacía, la borramos; si no, la guardamos con el cambio
+        if not plant.ejercicios:
+            srp.delete(plant.oid)
+        else:
+            srp.save(plant)
 
-    # Actualizar los entrenamientos realizados que lo contengan
-    for obj_id_r in srp.load_all_keys(EntrenamientoRealizado):
-        ent = srp.load(obj_id_r)
-        if ent.is_owner(current_user.get_id()) and clave in ent.ejercicios:
-            original_series = ent.ejercicios[clave]
-            ent.ejercicios[clave] = {
-                "nombre": ejercicio.nombre,
-                "series": original_series
-            }
-            srp.save(ent)
+    # Actualizar los entrenamientos realizados donte aparezca
+    for ent in srp.filter(
+        EntrenamientoRealizado,
+        lambda ent: ent.is_owner(current_user.get_id()) and clave in ent.ejercicios
+    ):
+        original_series = ent.ejercicios[clave]
+        # Dejamos el nombre y series originales y se añade el indicador de "(eliminado)" en el front
+        ent.ejercicios[clave] = {
+            "nombre": ejercicio.nombre,
+            "series": original_series
+        }
+        srp.save(ent)
 
-    # Eliminar el ejercicio
+    # Eliminar el ejercicio definitivamente
     srp.delete(ejercicio.oid)
 
     return redirect(url_for("ejercicios.lista"))
