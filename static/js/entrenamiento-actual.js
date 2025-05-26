@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     tick();
     setInterval(tick, 1000);
   }
-
+  
   // — 2. VALIDAR SERIES AL MARCAR CHECKBOX al instante —
   document.querySelectorAll(".custom-checkbox").forEach(cb => {
     cb.addEventListener("change", () => {
@@ -29,10 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
       pesoInput.style.border = '';
       repsInput.style.border = '';
 
+      const pesoVal = pesoInput.value.trim();
+      const repsVal = repsInput.value.trim();
       const p = parseFloat(pesoInput.value);
       const r = parseInt(repsInput.value, 10);
       const validPeso = !isNaN(p) && 0 <= p && p <= 1000;
-      const validReps = Number.isInteger(r) && 1 <= r && r <= 100;
+      const validReps = /^[0-9]+$/.test(repsVal) && (r >= 1 && r <= 100);
 
       if (!validPeso || !validReps) {
         // 1) revertir check + shake
@@ -50,8 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // 3) calcular flags de rango y no vacío
-        const pesoVal = pesoInput.value.trim();
-        const repsVal = repsInput.value.trim();
         const anyOutOfRange = (!validPeso && pesoVal !== "") || (!validReps && repsVal !== "");
         const anyNonEmpty   = pesoVal !== "" || repsVal !== "";
 
@@ -60,14 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
           const row = cb.closest("tr");
           const errorRow = row.nextElementSibling;
           const errorDiv = errorRow.querySelector(".serie-error");
-          errorDiv.textContent = "Rangos: PESO [0, 1000]kg | REPS [1, 100]";
+          errorDiv.textContent = "PESO : float[0, 1000] | REPS : int[1, 100]";
           errorRow.style.display = "table-row";
 
           // limpiar mensaje tras 2s
           setTimeout(() => {
             errorRow.style.display = "none";
             errorDiv.textContent = "";
-          }, 3500);
+          }, 4000);
         }
 
         // 5) limpiar shake y bordes tras 2s
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
           cb.classList.remove("checkbox-shake");
           pesoInput.style.border = '';
           repsInput.style.border = '';
-        }, 3500);
+        }, 4000);
       }
     });
   });
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const p = parseFloat(pesoVal);
       const r = parseInt(repsVal, 10);
       const validPeso = !isNaN(p) && 0 <= p && p <= 1000;
-      const validReps = Number.isInteger(r) && 1 <= r && r <= 100;
+      const validReps = /^[0-9]+$/.test(repsVal) && (r >= 1 && r <= 100);
 
       // Si la casilla estaba marcada
       if (checkbox.checked) {
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
           setTimeout(() => {
             pesoInput.style.border = '';
             repsInput.style.border = '';
-          }, 3500);
+          }, 4000);
           return;
         }
 
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const row = input.closest("tr");
           const errorRow = row.nextElementSibling;
           const errorDiv = errorRow.querySelector(".serie-error");
-          errorDiv.textContent = "Rangos:   PESO [0,1000kg]   |   REPS [1,100]";
+          errorDiv.textContent = "PESO : float[0, 1000] | REPS : int[1, 100]";
           errorRow.style.display = "table-row";
 
           setTimeout(() => {
@@ -135,12 +135,12 @@ document.addEventListener("DOMContentLoaded", () => {
             repsInput.style.border = '';
             errorRow.style.display = "none";
             errorDiv.textContent = "";
-          }, 3500);
+          }, 4000);
         }
       }
     });
   });
-
+  
   // — 4. CONFIRMAR FINALIZACIÓN —
   const form = document.getElementById("form-actual");
   if (form && form.dataset.showConfirm === "true") {

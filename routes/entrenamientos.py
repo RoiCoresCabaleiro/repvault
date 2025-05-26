@@ -100,7 +100,7 @@ def actual():
         if accion:
             tipo, soid = accion.split("-")
             if soid in entrenamiento.ejercicios:
-                if tipo == "añadir":
+                if tipo == "añadir"and len(entrenamiento.ejercicios[soid]) < 20:
                     entrenamiento.ejercicios[soid].append({"peso": "", "reps": "", "hecha": False})
                 elif tipo == "quitar" and len(entrenamiento.ejercicios[soid]) > 1:
                     entrenamiento.ejercicios[soid].pop()
@@ -234,8 +234,11 @@ def finalizar():
             return False
         return s.get("hecha") and (0 <= p <= 1000) and (1 <= r <= 100)
 
-    ejercicios_filtrados = {soid: [s for s in series if serie_valida(s)] for soid, series in entrenamiento.ejercicios.items()}
-    ejercicios_filtrados = {k: v for k, v in ejercicios_filtrados.items() if v}
+    ejercicios_filtrados = {
+        soid: [s for s in series if serie_valida(s)]
+        for soid, series in entrenamiento.ejercicios.items()
+        if any(serie_valida(s) for s in series)
+    }
 
     if not ejercicios_filtrados:
         error="Debes completar al menos una serie válida para finalizar el entrenamiento."
