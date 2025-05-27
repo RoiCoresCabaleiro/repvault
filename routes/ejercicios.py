@@ -145,7 +145,7 @@ def ver(clave):
     if not ejercicio.is_owner(current_user.get_id()):
         return redirect(url_for("ejercicios.lista"))
 
-    resultados = []
+    historial_ej = []
 
     # — Recopilar sesiones donde aparece este ejercicio —
     for ent in srp.filter(
@@ -155,18 +155,18 @@ def ver(clave):
         datos = ent.ejercicios[clave]
         series = datos["series"] if isinstance(datos, dict) else datos
 
-        resultados.append({
+        historial_ej.append({
             "fecha":           ent.fecha,
             "entrenamiento":   ent.nombre,
             "observaciones":   ent.observaciones,
             "series":          series
         })
 
-    resultados.sort(key=lambda x: datetime.strptime(x["fecha"], "%d/%m/%Y %H:%M:%S"), reverse=True)
+    historial_ej.sort(key=lambda x: datetime.strptime(x["fecha"], "%d/%m/%Y %H:%M:%S"), reverse=True)
 
     # — Aplanar todas las series válidas para este ejercicio —
     flat = []
-    for sesion in resultados:
+    for sesion in historial_ej:
         for s in sesion["series"]:
             try:
                 peso = float(s["peso"])
@@ -247,7 +247,7 @@ def ver(clave):
         "ejercicios/ver.html",
         ejercicio=ejercicio,
         clave=clave,
-        resultados=resultados,
+        historial_ej=historial_ej,
         stats=stats,
         rm_labels=rm_labels,
         rm_values=rm_values

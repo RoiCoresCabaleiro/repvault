@@ -7,7 +7,6 @@ class Ejercicio:
         self.grupo_muscular = grupo_muscular  # Uno de: Pecho, Espalda, etc.
         self.equipamiento = equipamiento      # Uno de: Peso libre, Máquinas
 
-        self.historial = []  # Entrenamientos donde fue usado
         self.ultimas_series = []  # Lista de dicts(series) con {"peso": n, "reps": n}
 
     @property
