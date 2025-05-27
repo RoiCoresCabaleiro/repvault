@@ -48,8 +48,8 @@ def register():
             error = "Por favor, introduce un nombre de usuario."
         elif Usuario.find(srp, nombre):
             error = "Este nombre de usuario ya existe."
-        elif len(nombre) > 30:
-            error = "El nombre de usuario no puede superar los 30 caracteres."
+        elif len(nombre) > 20:
+            error = "El nombre de usuario no puede superar los 20 caracteres."
         elif not contraseña:
             error = "Por favor, introduce una contraseña."
         elif len(contraseña) < 4:

@@ -17,10 +17,14 @@ entrenamientos_bp = Blueprint("entrenamientos", __name__, url_prefix="/entrenami
 @login_required
 def iniciar(clave):
     srp = sirope.Sirope()
-    plantilla = srp.load(decode_oid(clave))
+    
+    try:
+        plantilla = srp.load(decode_oid(clave))
+    except (AttributeError, ValueError, NameError):
+        return redirect(url_for("plantillas.lista", error_redirect="Rutina no encontrada."))
 
     if not plantilla.is_owner(current_user.get_id()):
-        return redirect(url_for("plantillas.lista"))
+        return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para iniciar un entrenamiento con esta rutina."))
 
     # Eliminar posibles entrenamientos en curso existentes (erroneos)
     for ent in srp.filter(
@@ -112,8 +116,8 @@ def actual():
             # Validar nombre
             if not entrenamiento.nombre_plantilla:
                 error = "El nombre del entrenamiento no puede estar vacío."
-            elif len(entrenamiento.nombre_plantilla) > 50:
-                error = "El nombre del entrenamiento no puede superar los 50 caracteres."
+            elif len(entrenamiento.nombre_plantilla) > 40:
+                error = "El nombre del entrenamiento no puede superar los 40 caracteres."
             elif entrenamiento.observaciones and len(entrenamiento.observaciones) > 500:
                 error = "Las observaciones no pueden superar los 500 caracteres."
             if not error:
@@ -186,8 +190,8 @@ def finalizar():
     error = None
     if not entrenamiento.nombre_plantilla:
         error = "El nombre del entrenamiento no puede estar vacío."
-    elif len(entrenamiento.nombre_plantilla) > 50:
-        error = "El nombre del entrenamiento no puede superar los 50 caracteres"
+    elif len(entrenamiento.nombre_plantilla) > 40:
+        error = "El nombre del entrenamiento no puede superar los 40 caracteres"
     elif entrenamiento.observaciones and len(entrenamiento.observaciones) > 500:
         error = "Las observaciones no pueden superar los 500 caracteres."
     if error:    

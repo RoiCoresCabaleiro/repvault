@@ -114,8 +114,8 @@ def gestionar(clave=None):
             # Validaciones básicas
             if not data["nombre"]:
                 error = "El nombre de la rutina no puede estar vacío."
-            elif len(data["nombre"]) > 50:
-                error = "El nombre de la rutina no puede superar los 50 caracteres"
+            elif len(data["nombre"]) > 40:
+                error = "El nombre de la rutina no puede superar los 40 caracteres"
 
             # Comprobar duplicados (excluyendo la propia al editar)
             if not error:

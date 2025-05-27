@@ -8,7 +8,7 @@
         { "nombre_ejercicio": "Aperturas (Máquina)",                       "series": 3 },
         { "nombre_ejercicio": "Elevaciones Laterales (Mancuernas)",        "series": 3 },
         { "nombre_ejercicio": "Press Francés (Barra)",                     "series": 3 },
-        { "nombre_ejercicio": "Extension de Triceps por encima de la cabeza (Cable)", "series": 3 }
+        { "nombre_ejercicio": "Extension de Triceps por encima cabeza (Cable)", "series": 3 }
       ]
     },
     {

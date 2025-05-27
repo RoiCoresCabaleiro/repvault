@@ -168,13 +168,13 @@
       "equipamiento": "Máquina"
     },
     {
-      "nombre": "Extension de Triceps por encima de la cabeza (Cable)",
+      "nombre": "Extension de Triceps por encima cabeza (Cable)",
       "descripcion": "Extensión de tríceps por encima de la cabeza en polea con cuerda",
       "grupo_muscular": "Tríceps",
       "equipamiento": "Máquina"
     },
     {
-      "nombre": "Extension de Triceps por encima de la cabeza (Mancuernas)",
+      "nombre": "Extension de Triceps por encima cabeza (Mancuernas)",
       "descripcion": "Extensión sentado con mancuerna por encima de la cabeza",
       "grupo_muscular": "Tríceps",
       "equipamiento": "Peso libre"

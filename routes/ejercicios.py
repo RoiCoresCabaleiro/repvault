@@ -83,8 +83,8 @@ def gestionar(clave=None):
         # Validaciones
         if not nombre:
             error = "Debes introducir un nombre."
-        elif len(nombre) > 60:
-            error = "El nombre no puede superar los 60 caracteres."
+        elif len(nombre) > 55:
+            error = "El nombre del ejercicio no puede superar los 55 caracteres."
         elif descripcion and len(descripcion) > 300:
             error = "La descripción no puede superar los 300 caracteres."
         
