@@ -26,14 +26,14 @@ def lista():
     plantillas_usuario.sort(key=lambda x: x[1].nombre.lower())
     plantillas_usuario.sort(key=lambda x: datetime.strptime(x[1].ultima_vez, "%d/%m/%Y %H:%M:%S") if x[1].ultima_vez else datetime.min, reverse=True)
 
-    return render_template("plantillas/lista.html", plantillas=plantillas_usuario)
+    return render_template("plantillas/lista.html", plantillas=plantillas_usuario, error_redirect=request.args.get("error_redirect", None))
 
 
 
 @plantillas_bp.route("/nueva", methods=["GET", "POST"])
-@plantillas_bp.route("/editar/<soid>", methods=["GET", "POST"])
+@plantillas_bp.route("/editar/<path:clave>", methods=["GET", "POST"])
 @login_required
-def gestionar(soid=None):
+def gestionar(clave=None):
     srp     = sirope.Sirope()
     plantilla_real = None
 
@@ -42,15 +42,14 @@ def gestionar(soid=None):
         session.pop("tmp_plantilla", None)
 
     # Si estamos editando, cargar plantilla existente
-    if soid:
+    if clave:
         try:
-            oid = decode_oid(soid)
+            plantilla_real = srp.load(decode_oid(clave))
         except (AttributeError, ValueError, NameError):
-            return redirect(url_for("plantillas.ver", soid=soid))
+            return redirect(url_for("plantillas.lista", error_redirect="Rutina no encontrada."))
         
-        plantilla_real = srp.load(oid)
         if not plantilla_real or not plantilla_real.is_owner(current_user.get_id()):
-             return redirect(url_for("plantillas.ver", soid=soid))
+             return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para editar esta rutina."))
 
     # Inicializar estado temporal en sesión si no existe
     if "tmp_plantilla" not in session:
@@ -174,8 +173,8 @@ def gestionar(soid=None):
     return render_template(
         "plantillas/gestion_plantillas.html",
         plantilla=plantilla,
-        is_edit=bool(soid),
-        soid=soid,
+        is_edit=bool(clave),
+        clave=clave,
         error=error,
         ejercicios_seleccionados=seleccionados,
         ejercicios_disponibles=disponibles,
@@ -191,10 +190,14 @@ def gestionar(soid=None):
 @login_required
 def ver(clave):
     srp = sirope.Sirope()
-    plantilla = srp.load(decode_oid(clave))
-
-    if not plantilla.is_owner(current_user.get_id()):
-        return redirect(url_for("plantillas.lista"))
+    
+    try:
+        plantilla = srp.load(decode_oid(clave))
+    except (AttributeError, ValueError, NameError):
+        return redirect(url_for("plantillas.lista", error_redirect="Rutina no encontrada."))
+    
+    if not plantilla or not plantilla.is_owner(current_user.get_id()):
+        return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para editar esta rutina."))
 
     # Obtener todos los ejercicios del usuario
     ej_objs = srp.filter(

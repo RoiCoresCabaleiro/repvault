@@ -34,7 +34,15 @@ def lista():
     )    
     ejercicios_usuario = sorted([(encode_oid(e.oid), e) for e in ej_objs], key=lambda x: x[1].nombre.lower())
 
-    return render_template("ejercicios/lista.html", ejercicios=ejercicios_usuario, grupo_filtro=grupo_filtro, equipamiento_filtro=equipamiento_filtro, grupos_validos=GRUPOS_VALIDOS, equipamientos_validos=EQUIPAMIENTOS_VALIDOS)
+    return render_template(
+        "ejercicios/lista.html",
+        ejercicios=ejercicios_usuario,
+        grupo_filtro=grupo_filtro,
+        equipamiento_filtro=equipamiento_filtro,
+        grupos_validos=GRUPOS_VALIDOS,
+        equipamientos_validos=EQUIPAMIENTOS_VALIDOS,
+        error_redirect=request.args.get("error_redirect", None)
+    )
 
 
 
@@ -51,10 +59,10 @@ def gestionar(clave=None):
         try:
             existente = srp.load(decode_oid(clave))
         except (AttributeError, ValueError, NameError):
-            return redirect(url_for("ejercicios.ver", clave=clave))
+            return redirect(url_for("ejercicios.lista", error_redirect="Ejercicio no encontrado."))
 
         if not existente or not existente.is_owner(current_user.get_id()):
-            return redirect(url_for("ejercicios.ver", clave=clave))
+            return redirect(url_for("ejercicios.lista", error_redirect="No tienes permiso para editar este ejercicio."))
  
     # 2) Valores iniciales del formulario
     if existente:
@@ -140,10 +148,10 @@ def ver(clave):
     try:
         ejercicio = srp.load(decode_oid(clave))
     except (AttributeError, ValueError, NameError):
-        return redirect(url_for("ejercicios.lista"))
+        return redirect(url_for("ejercicios.lista", error_redirect="Ejercicio no encontrado."))
     
     if not ejercicio.is_owner(current_user.get_id()):
-        return redirect(url_for("ejercicios.lista"))
+        return redirect(url_for("ejercicios.lista", error_redirect="No tienes permiso para ver este ejercicio."))
 
     historial_ej = []
 
