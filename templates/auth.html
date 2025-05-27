@@ -12,13 +12,13 @@
         <form method="post" action="{{ url_for('auth.' + mode) }}" class="space-y-4">
             <div>
                 <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Usuario</label>
-                <input type="text" id="nombre" name="nombre" value="{{ nombre }}" required
+                <input type="text" id="nombre" name="nombre" value="{{ nombre }}"
                     class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
             </div>
 
             <div>
                 <label for="contraseña" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
-                <input type="password" id="contraseña" name="contraseña" required
+                <input type="password" id="contraseña" name="contraseña"
                     class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors">
             </div>
 

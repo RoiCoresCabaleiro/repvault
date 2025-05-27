@@ -52,7 +52,7 @@ def dashboard():
     week_counts = []
     for i in range(7, -1, -1):  # desde 7 semanas atrás hasta la actual
         semana = lunes_actual - timedelta(weeks=i)
-        week_labels.append(semana.strftime("%-d/%-m"))  # "17/3"
+        week_labels.append(f"{semana.day}/{semana.month}")  # "17/3"
         week_counts.append(contador.get(semana, 0))
 
     max_count = max(week_counts) if week_counts else 0

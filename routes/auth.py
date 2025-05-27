@@ -17,12 +17,18 @@ def login():
         nombre = request.form.get("nombre", "").strip()
         contraseña = request.form.get("contraseña", "")
 
-        usuario = Usuario.find(srp, nombre)
-        if usuario and usuario.comprobar_contraseña(contraseña):
-            login_user(usuario)
-            return redirect(url_for("home.home"))
+        # Validaciones
+        if not nombre:
+            error = "Por favor, introduce un nombre de usuario."
+        elif not contraseña:
+            error = "Por favor, introduce una contraseña."
         else:
-            error = "Usuario o contraseña incorrectos."
+            usuario = Usuario.find(srp, nombre)
+            if usuario and usuario.comprobar_contraseña(contraseña):
+                login_user(usuario)
+                return redirect(url_for("home.home"))
+            else:
+                error = "Usuario o contraseña incorrectos."
 
     return render_template("auth.html", mode="login", error=error, nombre=nombre)
 
@@ -38,9 +44,11 @@ def register():
 
         # Validaciones
         if not nombre:
-            error = "El nombre de usuario no puede estar vacío."
+            error = "Por favor, introduce un nombre de usuario."
         elif Usuario.find(srp, nombre):
             error = "Este nombre de usuario ya existe."
+        elif not contraseña:
+            error = "Por favor, introduce una contraseña."
         else:
             nuevo_usuario = Usuario(nombre, contraseña)
             srp.save(nuevo_usuario)
