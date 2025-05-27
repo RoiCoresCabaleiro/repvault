@@ -41,15 +41,23 @@ def register():
         srp = sirope.Sirope()
         nombre = request.form.get("nombre", "").strip()
         contraseña = request.form.get("contraseña", "")
+        confirma = request.form.get("confirma", "")
 
         # Validaciones
         if not nombre:
             error = "Por favor, introduce un nombre de usuario."
         elif Usuario.find(srp, nombre):
             error = "Este nombre de usuario ya existe."
+        elif len(nombre) > 30:
+            error = "El nombre de usuario no puede superar los 30 caracteres."
         elif not contraseña:
             error = "Por favor, introduce una contraseña."
-        else:
+        elif len(contraseña) < 4:
+            error = "La contraseña debe tener al menos 4 caracteres."
+        elif contraseña != confirma:
+            error = "Las contraseñas no coinciden."
+
+        if not error:
             nuevo_usuario = Usuario(nombre, contraseña)
             srp.save(nuevo_usuario)
 
