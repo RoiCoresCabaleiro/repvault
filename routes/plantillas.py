@@ -149,16 +149,17 @@ def gestionar(clave=None):
                     plantilla_real.orden         = data["orden"]
                     plantilla_real.ejercicios    = data["ejercicios"]
                     srp.save(plantilla_real)
+                    session.pop("tmp_plantilla", None)
+                    return redirect(url_for("plantillas.ver", clave=encode_oid(plantilla_real.oid)))
                 else:
                     # Crear nueva plantilla
                     nueva = Plantilla(data["nombre"], data["observaciones"], current_user.get_id())
                     nueva.orden      = data["orden"]
                     nueva.ejercicios = data["ejercicios"]
                     srp.save(nueva)
-
-                session.pop("tmp_plantilla", None)
-                return redirect(url_for("plantillas.lista"))
-
+                    session.pop("tmp_plantilla", None)
+                    return redirect(url_for("plantillas.ver", clave=encode_oid(nueva.oid)))
+                
         # 4) Guardar estado intermedio en sesión
         session["tmp_plantilla"] = data
 
@@ -199,14 +200,16 @@ def ver(clave):
     if not plantilla or not plantilla.is_owner(current_user.get_id()):
         return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para editar esta rutina."))
 
-    # Obtener todos los ejercicios del usuario
-    ej_objs = srp.filter(
-        Ejercicio,
-        lambda e: e.is_owner(current_user.get_id())
-    )
-    ejercicios_usuario = [(encode_oid(e.oid), e) for e in ej_objs]
-
-    return render_template("plantillas/ver.html", plantilla=plantilla, ejercicios=ejercicios_usuario, clave=clave, orden=plantilla.orden)
+    # Obtener ejercicios de la plantilla
+    ej_oids = [decode_oid(soid) for soid in plantilla.orden]
+    ej_iter = srp.multi_load(ej_oids)
+    
+    ejercicios_plantilla = []
+    for soid, ej in zip(plantilla.orden, ej_iter):
+        if ej:
+            ejercicios_plantilla.append((soid, ej))
+    
+    return render_template("plantillas/ver.html", plantilla=plantilla, ejercicios_plantilla=ejercicios_plantilla, clave=clave)
 
 
 
