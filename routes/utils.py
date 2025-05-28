@@ -66,7 +66,8 @@ def calcular_ejs_disponibles(plantilla, grupo_filtro, equipamiento_filtro):
 
 
 # Metodo auxiliar para reconstruir listas y filtros de ejercicios en actual() y finalizar() (vista entrenamientos/actual.html)
-def build_ejercicio_context(srp, entrenamiento):
+def build_entrenamiento_context(entrenamiento):
+    srp = sirope.Sirope()
     # — 1) Ejercicios del usuario —
     ej_objs = srp.filter(
         Ejercicio,
@@ -96,6 +97,17 @@ def build_ejercicio_context(srp, entrenamiento):
     ]
 
     return ejercicios_usuario, ultimos_valores, grupo_filtro, equipamiento_filtro, ejercicios_disponibles
+
+
+
+def serie_valida(s):
+        try:
+            p = float(s["peso"])
+            r = int(s["reps"])
+        except (KeyError, ValueError, TypeError):
+            return False
+        return s.get("hecha") and (0 <= p <= 1000) and (1 <= r <= 100)
+
 
 
 

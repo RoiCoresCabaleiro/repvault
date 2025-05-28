@@ -187,7 +187,7 @@ def gestionar(clave=None):
 
 
 
-@plantillas_bp.route("/ver/<path:clave>")
+@plantillas_bp.route("/ver/<path:clave>", methods=["GET"])
 @login_required
 def ver(clave):
     srp = sirope.Sirope()
