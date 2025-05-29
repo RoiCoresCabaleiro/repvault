@@ -4,11 +4,9 @@ import sirope
 from datetime import datetime
 
 from models.plantilla import Plantilla
-from models.ejercicio import Ejercicio
 from routes.utils import encode_oid, decode_oid, GRUPOS_VALIDOS, EQUIPAMIENTOS_VALIDOS, calcular_ejs_seleccionados, calcular_ejs_disponibles
 
 plantillas_bp = Blueprint("plantillas", __name__, url_prefix="/plantillas")
-
 
 
 @plantillas_bp.route("/")
@@ -187,7 +185,7 @@ def gestionar(clave=None):
 
 
 
-@plantillas_bp.route("/ver/<path:clave>", methods=["GET"])
+@plantillas_bp.route("/ver/<path:clave>")
 @login_required
 def ver(clave):
     srp = sirope.Sirope()

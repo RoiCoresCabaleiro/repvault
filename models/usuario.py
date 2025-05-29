@@ -18,14 +18,5 @@ class Usuario(flask_login.UserMixin):
         return check_password_hash(self._contraseña_hash, contraseña)
 
     @staticmethod
-    def current_user():
-        user = flask_login.current_user
-        if user.is_anonymous:
-            flask_login.logout_user()
-            user = None
-        
-        return user
-
-    @staticmethod
     def find(srp: sirope.Sirope, nombre: str) -> "Usuario":
         return srp.find_first(Usuario, lambda u: u.nombre == nombre)

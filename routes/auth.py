@@ -5,7 +5,7 @@ import sirope
 from models.usuario import Usuario
 from routes.utils import importar_ejercicios_por_defecto, importar_plantillas_por_defecto, generar_entrenamientos_historicos
 
-auth_bp = Blueprint("auth", __name__)
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])

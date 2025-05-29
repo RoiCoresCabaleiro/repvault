@@ -31,8 +31,8 @@ def unauthorized():
     return redirect(url_for("auth.login", error="Debes iniciar sesión para acceder a esa página."))
 
 # Registrar Blueprints
-app.register_blueprint(auth_bp)
 app.register_blueprint(home_bp)
+app.register_blueprint(auth_bp)
 app.register_blueprint(ejercicios_bp)
 app.register_blueprint(plantillas_bp)
 app.register_blueprint(entrenamientos_bp)

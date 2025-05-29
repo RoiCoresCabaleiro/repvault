@@ -1,8 +1,7 @@
-import json, os
+import json, os, random
 from flask import current_app, request
 from flask_login import current_user
 import sirope
-import random
 from datetime import datetime, timedelta
 
 from models.ejercicio import Ejercicio
@@ -100,6 +99,8 @@ def build_entrenamiento_context(entrenamiento):
 
 
 
+# Dada una serie ({ "peso": float, "reps": int, "hecha": bool }),
+# devuelve true si es valida (marcada como completada y peso y reps en rango) y false en caso contrario
 def serie_valida(s):
         try:
             p = float(s["peso"])
@@ -107,7 +108,6 @@ def serie_valida(s):
         except (KeyError, ValueError, TypeError):
             return False
         return s.get("hecha") and (0 <= p <= 1000) and (1 <= r <= 100)
-
 
 
 
@@ -223,5 +223,3 @@ def generar_entrenamientos_historicos(usuario_nombre: str) -> None:
 
         fecha += timedelta(days=1)
         i += 1
-
-    print("✅ Generación histórica completada para", usuario_nombre)

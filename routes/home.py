@@ -6,7 +6,7 @@ from collections import Counter
 
 from models.entrenamiento_realizado import EntrenamientoRealizado
 
-home_bp = Blueprint("home", __name__, url_prefix="")
+home_bp = Blueprint("home", __name__)
 
 
 
