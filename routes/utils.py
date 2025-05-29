@@ -10,13 +10,13 @@ from models.entrenamiento_realizado import EntrenamientoRealizado
 
 
 
-# Devuelve la identificación segura para un objeto, dado su OID
 def encode_oid(oid):
+    """Devuelve la identificación segura para un objeto, dado su OID"""
     s = sirope.Sirope()
     return s.safe_from_oid(oid)
 
-# Devuelve el OID de un objeto, dada su identificación segura
 def decode_oid(soid):
+    """Devuelve el OID de un objeto, dada su identificación segura"""
     s = sirope.Sirope()
     return s.oid_from_safe(soid)
 
@@ -27,9 +27,11 @@ GRUPOS_VALIDOS = ["Pecho", "Espalda", "Hombros", "Bíceps", "Tríceps", "Piernas
 EQUIPAMIENTOS_VALIDOS = ["Peso libre", "Máquina"]
 
 
-# Método auxiliar para calcular los ejercicios seleccionados (es decir, ya incluidos en la plantilla)
-# a los que se les puede asignar el numero de series y editar su orden en la vista gestion_plantillas.html
+
 def calcular_ejs_seleccionados(plantilla):
+    """Método auxiliar para calcular los ejercicios seleccionados (es decir, ya incluidos en la plantilla)
+    a los que se les puede asignar el numero de series y editar su orden en la vista gestion_plantillas.html"""
+
     srp = sirope.Sirope()
     
     orden_oids = [decode_oid(soid) for soid in plantilla.orden]
@@ -42,9 +44,10 @@ def calcular_ejs_seleccionados(plantilla):
 
     return seleccionados
 
-# Método auxiliar para calcular los ejercicios disponibles (es decir, aun no incluidos en la plantilla)
-# sobre los que se aplican los filtros en la vista gestion_plantillas.html
 def calcular_ejs_disponibles(plantilla, grupo_filtro, equipamiento_filtro):
+    """Método auxiliar para calcular los ejercicios disponibles (es decir, aun no incluidos en la plantilla)
+    sobre los que se aplican los filtros en la vista gestion_plantillas.html"""
+    
     srp = sirope.Sirope()
     claves_sel = set(plantilla.ejercicios.keys())
 
@@ -64,8 +67,9 @@ def calcular_ejs_disponibles(plantilla, grupo_filtro, equipamiento_filtro):
 
 
 
-# Metodo auxiliar para reconstruir listas y filtros de ejercicios en actual() y finalizar() (vista entrenamientos/actual.html)
 def build_entrenamiento_context(entrenamiento):
+    """Metodo auxiliar para reconstruir listas y filtros de ejercicios durante el entrenamiento en curso"""
+    
     srp = sirope.Sirope()
     # — 1) Ejercicios del usuario —
     ej_objs = srp.filter(
@@ -99,20 +103,22 @@ def build_entrenamiento_context(entrenamiento):
 
 
 
-# Dada una serie ({ "peso": float, "reps": int, "hecha": bool }),
-# devuelve true si es valida (marcada como completada y peso y reps en rango) y false en caso contrario
 def serie_valida(s):
-        try:
-            p = float(s["peso"])
-            r = int(s["reps"])
-        except (KeyError, ValueError, TypeError):
-            return False
-        return s.get("hecha") and (0 <= p <= 1000) and (1 <= r <= 100)
+    """Dada una serie ({ "peso": float, "reps": int, "hecha": bool })\n
+    Devuelve true si es valida (marcada como completada y peso y reps en rango) y false en caso contrario"""
+
+    try:
+        p = float(s["peso"])
+        r = int(s["reps"])
+    except (KeyError, ValueError, TypeError):
+        return False
+    return s.get("hecha") and (0 <= p <= 1000) and (1 <= r <= 100)
 
 
 
-# Carga ejercicios desde data/default_exercises.json y los salva en Redis bajo el usuario dado.
 def importar_ejercicios_por_defecto(usuario_nombre):
+    """Carga ejercicios por defecto desde data/default_exercises.json y los guarda bajo el usuario dado."""
+
     srp = sirope.Sirope()
     ruta = os.path.join(current_app.root_path, "data", "default_ejercicios.json")
     with open(ruta, encoding="utf-8") as f:
@@ -130,9 +136,9 @@ def importar_ejercicios_por_defecto(usuario_nombre):
 
 
 
-# Lee data/default_plantillas.json y crea una Plantilla por cada entrada, asignándola al usuario dado.
-# Para mapear nombre_ejercicio → OID usamos el nombre de ejercicio y Sirope.filter().
 def importar_plantillas_por_defecto(usuario_nombre):
+    """Carga plantillas por defecto desde data/default_plantillas.json y los guarda bajo el usuario dado."""
+    
     srp = sirope.Sirope()
     ruta = os.path.join(current_app.root_path, "data", "default_plantillas.json")
     with open(ruta, encoding="utf-8") as f:
@@ -161,9 +167,12 @@ def importar_plantillas_por_defecto(usuario_nombre):
 
 
 
-# Genera entrenamientos diarios para el usuario siguiendo el ciclo dado,
-# rellenando cada ejercicio de la plantilla con valores aleatorios de reps y peso
 def generar_entrenamientos_historicos(usuario_nombre: str) -> None:
+    """Genera EntrenamientoRealizado en días pasados para el usuario dado siguiendo el ciclo dado y
+    rellenando cada ejercicio con valores aleatorios de reps y peso.\n
+    Permite explorar el funcionamiento completo del sistema.\n
+    En /auth/register se llama a esta función si el nombre del usuario creado es "prueba"."""
+
     dias_hacia_atras = 90
     ciclo = ["push", "pull", "legs", "descanso"]
     rango_reps = (8, 15)

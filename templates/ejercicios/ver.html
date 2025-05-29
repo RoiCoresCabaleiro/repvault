@@ -54,66 +54,69 @@
         <!-- Estadísticas -->
         <div class="order-1 lg:order-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 font-heading">Estadísticas</h3>
-            
-            <div class="space-y-4">
-                <!-- Peso máximo -->
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <div class="font-medium text-gray-900 dark:text-white">Peso máx.:</div>
-                    <div class="flex flex-col sm:items-end">
-                        <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.max_weight.value }} kg</div>
-                        <div class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ stats.max_weight.peso }} kg x {{ stats.max_weight.reps }} reps
-                            ({{ stats.max_weight.fecha.split(" ")[0] }})
+            {% if historial_ej %}
+                <div class="space-y-4">
+                    <!-- Peso máximo -->
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div class="font-medium text-gray-900 dark:text-white">Peso máx.:</div>
+                        <div class="flex flex-col sm:items-end">
+                            <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.max_weight.value }} kg</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ stats.max_weight.peso }} kg x {{ stats.max_weight.reps }} reps
+                                ({{ stats.max_weight.fecha.split(" ")[0] }})
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Volumen máximo -->
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <div class="font-medium text-gray-900 dark:text-white">Vol. máx.:</div>
-                    <div class="flex flex-col sm:items-end">
-                        <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.max_volume.value }} kg</div>
-                        <div class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ stats.max_volume.peso }} kg x {{ stats.max_volume.reps }} reps
-                            ({{ stats.max_volume.fecha.split(" ")[0] }})
+                    <!-- Volumen máximo -->
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div class="font-medium text-gray-900 dark:text-white">Vol. máx.:</div>
+                        <div class="flex flex-col sm:items-end">
+                            <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.max_volume.value }} kg</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ stats.max_volume.peso }} kg x {{ stats.max_volume.reps }} reps
+                                ({{ stats.max_volume.fecha.split(" ")[0] }})
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Mejor 1RM estimado -->
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <div class="font-medium text-gray-900 dark:text-white">1RM est.:</div>
-                    <div class="flex flex-col sm:items-end">
-                        <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.best_1rm.estimate|round(1) }} kg</div>
-                        <div class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ stats.best_1rm.peso }} kg x {{ stats.best_1rm.reps }} reps
-                            ({{ stats.best_1rm.fecha.split(" ")[0] }})
+                    <!-- Mejor 1RM estimado -->
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div class="font-medium text-gray-900 dark:text-white">1RM est.:</div>
+                        <div class="flex flex-col sm:items-end">
+                            <div class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ stats.best_1rm.estimate|round(1) }} kg</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ stats.best_1rm.peso }} kg x {{ stats.best_1rm.reps }} reps
+                                ({{ stats.best_1rm.fecha.split(" ")[0] }})
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <hr class="border-gray-200 dark:border-gray-700">
+                    <hr class="border-gray-200 dark:border-gray-700">
 
-                <!-- Totales -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">Reps totales</div>
-                        <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ stats.total_reps }}</div>
+                    <!-- Totales -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Reps totales</div>
+                            <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ stats.total_reps }}</div>
+                        </div>
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Vol. acumulado</div>
+                            <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ stats.total_volume }} kg</div>
+                        </div>
                     </div>
-                    <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">Vol. acumulado</div>
-                        <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ stats.total_volume }} kg</div>
+
+                    <!-- Gráfico 1RM en el tiempo -->
+                    <div class="mt-4">
+                        <canvas id="chart-1rm" height="200" class="w-full"></canvas>
+                        <script type="application/json" id="chart-data">
+                            {{ {"labels": rm_labels, "values": rm_values} | tojson }}
+                        </script>
                     </div>
                 </div>
-
-                <!-- Gráfico 1RM en el tiempo -->
-                <div class="mt-4">
-                    <canvas id="chart-1rm" height="200" class="w-full"></canvas>
-                    <script type="application/json" id="chart-data">
-                        {{ {"labels": rm_labels, "values": rm_values} | tojson }}
-                    </script>
-                </div>
-            </div>
+            {% else %}
+                <p class="text-gray-600 dark:text-gray-400">No hay estadísticas de este ejercicio.</p>
+            {% endif %}
         </div>
 
         <!-- Historial -->

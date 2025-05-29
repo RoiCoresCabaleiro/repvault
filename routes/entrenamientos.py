@@ -16,6 +16,11 @@ entrenamientos_bp = Blueprint("entrenamientos", __name__, url_prefix="/entrenami
 @entrenamientos_bp.route("/iniciar/<path:clave>", methods=["POST"])
 @login_required
 def iniciar(clave):
+    """Iniciar un entrenamiento.\n
+    Se crea un EntrenamientoEnCurso a partir de una Plantilla, en el que se podrá registrar el progreso
+    a lo largo de un entrenamiento y se podrán hacer todo tipo de cambios en tiempo real que no afectan
+    a la plantilla de origen"""
+
     srp = sirope.Sirope()
     
     try:
@@ -50,6 +55,11 @@ def iniciar(clave):
 @entrenamientos_bp.route("/actual", methods=["GET", "POST"])
 @login_required
 def actual():
+    """Gestiona el progreso del usuario en el EntrenamientoEnCurso, guardando a cada paso el estado actual del mismo.\n
+    También maneja todos los cambios que se pueden hacer desde la propia vista actual (cambiar el nombre y las observaciones, 
+    añadir o quitar ejercicios (pudiendo filtrarlos para facilitar la busqueda) y añadir o quitar series a cada ejercicio).\n
+    Se manejan desde esta ruta tambíen las validaciones previas a finalizar el entrenamiento"""
+
     srp = sirope.Sirope()
 
     # — Cargar en curso —
@@ -164,9 +174,16 @@ def actual():
     )
 
 
+
 @entrenamientos_bp.route("/finalizar", methods=["POST"])
 @login_required
 def finalizar():
+    """Terminar un entrenamiento.\n
+    Se crea un EntrenamientoRealizado a partir de los datos procesados del EntrenamientoEnCurso del usuario.\n
+    Además se actualiza la fecha de ultima vez de la plantilla a partir de la que se creó el EntrenamientoEnCurso y
+    se actualizan las ultimas series de cada ejercicio.\n
+    Se borra el EntrenamientoEnCurso sobrante."""
+
     srp = sirope.Sirope()
     
     # — Cargar entrenamiento en curso —
@@ -231,6 +248,9 @@ def finalizar():
 @entrenamientos_bp.route("/cancelar", methods=["POST"])
 @login_required
 def cancelar():
+    """Cancelar entrenamiento sin guardar y salir\n
+    Se borra el EntrenamientoEnCurso sobrante"""
+
     srp = sirope.Sirope()
 
     ent = srp.find_first(
@@ -247,6 +267,9 @@ def cancelar():
 @entrenamientos_bp.route("/historial")
 @login_required
 def historial():
+    """Generar Historial de Entrenamientos a partir de los EntrenamientoRealizado del usuario\n
+    Construir calendario con estos datos."""
+
     srp = sirope.Sirope()
 
     # Cargar entrenamientos realizados y ordenar por fecha (más reciente primero)

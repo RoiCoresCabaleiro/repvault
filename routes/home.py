@@ -12,15 +12,20 @@ home_bp = Blueprint("home", __name__)
 
 @home_bp.route("/")
 def home():
+    """Raiz. Verifica que el usuario esté autenticado y redirige al dashboard"""
+    
     if current_user.is_authenticated:
         return redirect(url_for("home.dashboard"))
     
     return render_template("home.html")
 
 
+
 @home_bp.route("/home")
 @login_required
 def dashboard():
+    """Carga el dashboard del usuario (Tarjetas de navegacion simples y diagrama de entrenamientos semanales)"""
+
     srp = sirope.Sirope()
 
     # --- 1) Fechas de hoy y hace 8 semanas ---

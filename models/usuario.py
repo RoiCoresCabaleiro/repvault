@@ -12,6 +12,8 @@ class Usuario(flask_login.UserMixin):
         return self._nombre
 
     def get_id(self) -> str:
+        """Devuelve el nombre del usuario"""
+        
         return self.nombre
     
     def comprobar_contraseña(self, contraseña: str) -> bool:

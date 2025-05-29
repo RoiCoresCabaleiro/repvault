@@ -9,9 +9,13 @@ from routes.utils import encode_oid, decode_oid, GRUPOS_VALIDOS, EQUIPAMIENTOS_V
 plantillas_bp = Blueprint("plantillas", __name__, url_prefix="/plantillas")
 
 
+
+
 @plantillas_bp.route("/")
 @login_required
 def lista():
+    """Listar todas las plantillas del Usuario, mostrando sus observaciones, nº de ejercicios y fecha de ultima vez (realizada)"""
+
     srp = sirope.Sirope()
 
     ej_objs = srp.filter(
@@ -28,10 +32,43 @@ def lista():
 
 
 
+@plantillas_bp.route("/ver/<path:clave>")
+@login_required
+def ver(clave):
+    """Ver detalles de una Plantilla (nombre, observaciones y Ejercicios incluidos y sus series planificadas)"""
+
+    srp = sirope.Sirope()
+    
+    try:
+        plantilla = srp.load(decode_oid(clave))
+    except (AttributeError, ValueError, NameError):
+        return redirect(url_for("plantillas.lista", error_redirect="Rutina no encontrada."))
+    
+    if not plantilla or not plantilla.is_owner(current_user.get_id()):
+        return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para editar esta rutina."))
+
+    # Obtener ejercicios de la plantilla
+    ej_oids = [decode_oid(soid) for soid in plantilla.orden]
+    ej_iter = srp.multi_load(ej_oids)
+    
+    ejercicios_plantilla = []
+    for soid, ej in zip(plantilla.orden, ej_iter):
+        if ej:
+            ejercicios_plantilla.append((soid, ej))
+    
+    return render_template("plantillas/ver.html", plantilla=plantilla, ejercicios_plantilla=ejercicios_plantilla, clave=clave)
+
+
+
 @plantillas_bp.route("/nueva", methods=["GET", "POST"])
 @plantillas_bp.route("/editar/<path:clave>", methods=["GET", "POST"])
 @login_required
 def gestionar(clave=None):
+    """Crear plantillas nuevas y editar existentes de forma interactiva.\n
+    Se especifican nombre y observaciones opcionales de forma convencional y los ejercicios se añaden dinámicamente
+    a través de un panel que permite aplicar filtros.\n
+    De forma que se puede especificar luego el número de series por ejercicio y alterar su orden mediante flechas"""
+
     srp     = sirope.Sirope()
     plantilla_real = None
 
@@ -185,35 +222,12 @@ def gestionar(clave=None):
 
 
 
-@plantillas_bp.route("/ver/<path:clave>")
-@login_required
-def ver(clave):
-    srp = sirope.Sirope()
-    
-    try:
-        plantilla = srp.load(decode_oid(clave))
-    except (AttributeError, ValueError, NameError):
-        return redirect(url_for("plantillas.lista", error_redirect="Rutina no encontrada."))
-    
-    if not plantilla or not plantilla.is_owner(current_user.get_id()):
-        return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para editar esta rutina."))
-
-    # Obtener ejercicios de la plantilla
-    ej_oids = [decode_oid(soid) for soid in plantilla.orden]
-    ej_iter = srp.multi_load(ej_oids)
-    
-    ejercicios_plantilla = []
-    for soid, ej in zip(plantilla.orden, ej_iter):
-        if ej:
-            ejercicios_plantilla.append((soid, ej))
-    
-    return render_template("plantillas/ver.html", plantilla=plantilla, ejercicios_plantilla=ejercicios_plantilla, clave=clave)
-
-
-
 @plantillas_bp.route("/eliminar/<path:clave>", methods=["GET", "POST"])
 @login_required
 def eliminar(clave):
+    """Eliminar una plantilla existente.\n
+    Esta acción no tiene ningún efecto en el resto de clases"""
+
     srp = sirope.Sirope()
     plantilla = srp.load(decode_oid(clave))
 
