@@ -72,10 +72,8 @@ def actual():
 
     # — Reconstruir contexto —
     ejercicios_usuario, ultimos_valores, grupo_filtro, equipamiento_filtro, ejercicios_disponibles = build_entrenamiento_context(entrenamiento)
-    print("context")
     
     if request.method == "POST":
-        print("post")
         # — 1) Actualizar nombre y observaciones —
         entrenamiento.nombre_plantilla = request.form.get("nombre_plantilla", entrenamiento.nombre_plantilla).strip()
         entrenamiento.observaciones = request.form.get("observaciones", entrenamiento.observaciones).strip()

@@ -45,7 +45,7 @@ def register():
             importar_plantillas_por_defecto(nuevo_usuario.get_id())
 
             # Crear un usuario "prueba" para probar el funcionamiento de la vista de historial de entrenamientos y de ejercicios
-            if nuevo_usuario.nombre == "prueba":
+            if nuevo_usuario.get_id() == "prueba":
                 generar_entrenamientos_historicos(nuevo_usuario.nombre)
 
             login_user(nuevo_usuario)
