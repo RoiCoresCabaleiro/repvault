@@ -15,7 +15,9 @@ ejercicios_bp = Blueprint("ejercicios", __name__, url_prefix="/ejercicios")
 @ejercicios_bp.route("/")
 @login_required
 def lista():
-    """Listar todos los ejercicios del usuario, permitiendo filtrarlos mediante grupo muscular y equipamiento"""
+    """
+    Listar todos los ejercicios del usuario, permitiendo filtrarlos mediante grupo muscular y equipamiento
+    """
 
     srp = sirope.Sirope()
 
@@ -51,7 +53,9 @@ def lista():
 @ejercicios_bp.route("/ver/<path:clave>")
 @login_required
 def ver(clave):
-    """Ver detalles de un ejercicio existente (Nombre, descripcion, grupo muscular, equipamiento, Historial del ejercicio y Estadísticas)"""
+    """
+    Ver detalles de un ejercicio existente (Nombre, descripcion, grupo muscular, equipamiento, Historial del ejercicio y Estadísticas)
+    """
 
     srp = sirope.Sirope()
 
@@ -178,9 +182,10 @@ def ver(clave):
 @ejercicios_bp.route("/editar/<path:clave>", methods=["GET", "POST"])
 @login_required
 def gestionar(clave=None):
-    """Crear ejercicios nuevos y editar existentes (especificando nombre, descripción opcional, grupo muscular principal y equipamiento)\n
-    Editar un ejercicio actualiza su nombre en el Historial de Entrenamientos"""
-
+    """
+    Crear ejercicios nuevos y editar existentes (especificando nombre, descripción opcional, grupo muscular principal y equipamiento)\n
+    Editar un ejercicio actualiza su nombre en el Historial de Entrenamientos
+    """
     srp     = sirope.Sirope()
     error   = None
     existente = None
@@ -274,9 +279,11 @@ def gestionar(clave=None):
 @ejercicios_bp.route("/eliminar/<path:clave>", methods=["POST"])
 @login_required
 def eliminar(clave):
-    """Eliminar un ejercicio existente.\n
+    """
+    Eliminar un ejercicio existente.\n
     Esta acción actualiza las plantillas que lo incluían, y en caso de tratarse de su último ejercicio, también se borran la plantillas en cuestión.\n
-    También se actualizan sus entradas en el Historial de Entrenamientos, marcándolo como "(eliminado)" pero conservando los valores de las series realizadas."""
+    También se actualizan sus entradas en el Historial de Entrenamientos, marcándolo como "(eliminado)" pero conservando los valores de las series realizadas.
+    """
 
     srp = sirope.Sirope()
     

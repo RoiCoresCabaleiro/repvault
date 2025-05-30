@@ -14,8 +14,9 @@ plantillas_bp = Blueprint("plantillas", __name__, url_prefix="/plantillas")
 @plantillas_bp.route("/")
 @login_required
 def lista():
-    """Listar todas las plantillas del Usuario, mostrando sus observaciones, nº de ejercicios y fecha de ultima vez (realizada)"""
-
+    """
+    Listar todas las plantillas del Usuario, mostrando sus observaciones, nº de ejercicios y fecha de ultima vez (realizada)
+    """
     srp = sirope.Sirope()
 
     ej_objs = srp.filter(
@@ -35,8 +36,9 @@ def lista():
 @plantillas_bp.route("/ver/<path:clave>")
 @login_required
 def ver(clave):
-    """Ver detalles de una Plantilla (nombre, observaciones y Ejercicios incluidos y sus series planificadas)"""
-
+    """
+    Ver detalles de una Plantilla (nombre, observaciones y Ejercicios incluidos y sus series planificadas)
+    """
     srp = sirope.Sirope()
     
     try:
@@ -64,11 +66,12 @@ def ver(clave):
 @plantillas_bp.route("/editar/<path:clave>", methods=["GET", "POST"])
 @login_required
 def gestionar(clave=None):
-    """Crear plantillas nuevas y editar existentes de forma interactiva.\n
+    """
+    Crear plantillas nuevas y editar existentes de forma interactiva.\n
     Se especifican nombre y observaciones opcionales de forma convencional y los ejercicios se añaden dinámicamente
     a través de un panel que permite aplicar filtros.\n
-    De forma que se puede especificar luego el número de series por ejercicio y alterar su orden mediante flechas"""
-
+    De forma que se puede especificar luego el número de series por ejercicio y alterar su orden mediante flechas
+    """
     srp     = sirope.Sirope()
     plantilla_real = None
 
@@ -222,12 +225,13 @@ def gestionar(clave=None):
 
 
 
-@plantillas_bp.route("/eliminar/<path:clave>", methods=["GET", "POST"])
+@plantillas_bp.route("/eliminar/<path:clave>", methods=["POST"])
 @login_required
 def eliminar(clave):
-    """Eliminar una plantilla existente.\n
-    Esta acción no tiene ningún efecto en el resto de clases"""
-
+    """
+    Eliminar una plantilla existente.\n
+    Esta acción no tiene ningún efecto en el resto de clases
+    """
     srp = sirope.Sirope()
     plantilla = srp.load(decode_oid(clave))
 
