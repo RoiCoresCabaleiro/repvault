@@ -12,25 +12,19 @@ from routes.utils import encode_oid, decode_oid, GRUPOS_VALIDOS, EQUIPAMIENTOS_V
 entrenamientos_bp = Blueprint("entrenamientos", __name__, url_prefix="/entrenamiento")
 
 
-
+@entrenamientos_bp.route("/iniciar", defaults={"clave": None}, methods=["POST"])
 @entrenamientos_bp.route("/iniciar/<path:clave>", methods=["POST"])
 @login_required
 def iniciar(clave):
-    """Iniciar un entrenamiento.\n
+    """
+    Iniciar un entrenamiento.\n
     Se crea un EntrenamientoEnCurso a partir de una Plantilla, en el que se podrá registrar el progreso
     a lo largo de un entrenamiento y se podrán hacer todo tipo de cambios en tiempo real que no afectan
-    a la plantilla de origen"""
-
+    a la plantilla de origen.\n
+    Tambien se puede iniciar un entrenamiento vacío sin basarse en ninguna plantilla.
+    """
     srp = sirope.Sirope()
     
-    try:
-        plantilla = srp.load(decode_oid(clave))
-    except (AttributeError, ValueError, NameError):
-        return redirect(url_for("plantillas.lista", error_redirect="Rutina no encontrada."))
-
-    if not plantilla.is_owner(current_user.get_id()):
-        return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para iniciar un entrenamiento con esta rutina."))
-
     # Eliminar posibles entrenamientos en curso existentes (erroneos)
     for ent in srp.filter(
         EntrenamientoEnCurso,
@@ -38,16 +32,22 @@ def iniciar(clave):
     ):
         srp.delete(ent.oid)
 
-    # Crear nuevo entrenamiento en curso a partir de la plantilla
-    nuevo = EntrenamientoEnCurso(
-        usuario_nombre=current_user.get_id(),
-        plantilla_soid=clave,
-        nombre_plantilla=plantilla.nombre,
-        observaciones=plantilla.observaciones,
-        ejercicios_plantilla=[(soid, plantilla.ejercicios[soid]) for soid in plantilla.orden]
-    )
-    srp.save(nuevo)
+    if clave:
+        try:
+            plantilla = srp.load(decode_oid(clave))
+        except (AttributeError, ValueError, NameError):
+            return redirect(url_for("plantillas.lista", error_redirect="Rutina no encontrada."))
 
+        if not plantilla.is_owner(current_user.get_id()):
+            return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para iniciar un entrenamiento con esta rutina."))
+
+        # Entrenamiento basado en la plantilla
+        nuevo = EntrenamientoEnCurso.from_plantilla(plantilla, current_user.get_id())
+    else:
+        # Entrenamiento completamente vacío
+        nuevo = EntrenamientoEnCurso.empty(current_user.get_id())
+
+    srp.save(nuevo)
     return redirect(url_for("entrenamientos.actual"))
 
 
@@ -55,11 +55,12 @@ def iniciar(clave):
 @entrenamientos_bp.route("/actual", methods=["GET", "POST"])
 @login_required
 def actual():
-    """Gestiona el progreso del usuario en el EntrenamientoEnCurso, guardando a cada paso el estado actual del mismo.\n
+    """
+    Gestiona el progreso del usuario en el EntrenamientoEnCurso, guardando a cada paso el estado actual del mismo.\n
     También maneja todos los cambios que se pueden hacer desde la propia vista actual (cambiar el nombre y las observaciones, 
     añadir o quitar ejercicios (pudiendo filtrarlos para facilitar la busqueda) y añadir o quitar series a cada ejercicio).\n
-    Se manejan desde esta ruta tambíen las validaciones previas a finalizar el entrenamiento"""
-
+    Se manejan desde esta ruta tambíen las validaciones previas a finalizar el entrenamiento
+    """
     srp = sirope.Sirope()
 
     # — Cargar en curso —
@@ -176,12 +177,13 @@ def actual():
 @entrenamientos_bp.route("/finalizar", methods=["POST"])
 @login_required
 def finalizar():
-    """Terminar un entrenamiento.\n
+    """
+    Terminar un entrenamiento.\n
     Se crea un EntrenamientoRealizado a partir de los datos procesados del EntrenamientoEnCurso del usuario.\n
     Además se actualiza la fecha de ultima vez de la plantilla a partir de la que se creó el EntrenamientoEnCurso y
     se actualizan las ultimas series de cada ejercicio.\n
-    Se borra el EntrenamientoEnCurso sobrante."""
-
+    Se borra el EntrenamientoEnCurso sobrante.
+    """
     srp = sirope.Sirope()
     
     # — Cargar entrenamiento en curso —
@@ -218,14 +220,16 @@ def finalizar():
     )
     srp.save(realizado)
 
-    # — 4) Actualizar última vez de la plantilla origen — 
-    try:
-        p = srp.load(decode_oid(entrenamiento.plantilla_soid))
-        if p and p.is_owner(current_user.get_id()):
-            p.ultima_vez = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-            srp.save(p)
-    except (ValueError, NameError, AttributeError):
-        pass
+    # — 4) Actualizar última vez de la plantilla origen si la hay— 
+    if entrenamiento.plantilla_soid:
+        try:
+            p = srp.load(decode_oid(entrenamiento.plantilla_soid))
+            if p and p.is_owner(current_user.get_id()):
+                p.ultima_vez = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                srp.save(p)
+        except (ValueError, NameError, AttributeError):
+            pass
+
 
     # — 5) Actualizar últimas series de cada ejercicio —
     ej_oids = [decode_oid(soid) for soid in ejercicios_filtrados]
@@ -246,9 +250,10 @@ def finalizar():
 @entrenamientos_bp.route("/cancelar", methods=["POST"])
 @login_required
 def cancelar():
-    """Cancelar entrenamiento sin guardar y salir\n
-    Se borra el EntrenamientoEnCurso sobrante"""
-
+    """
+    Cancelar entrenamiento sin guardar y salir\n
+    Se borra el EntrenamientoEnCurso sobrante
+    """
     srp = sirope.Sirope()
 
     ent = srp.find_first(
@@ -265,9 +270,10 @@ def cancelar():
 @entrenamientos_bp.route("/historial")
 @login_required
 def historial():
-    """Generar Historial de Entrenamientos a partir de los EntrenamientoRealizado del usuario\n
-    Construir calendario con estos datos."""
-
+    """
+    Generar Historial de Entrenamientos a partir de los EntrenamientoRealizado del usuario\n
+    Construir calendario con estos datos.
+    """
     srp = sirope.Sirope()
 
     # Cargar entrenamientos realizados y ordenar por fecha (más reciente primero)

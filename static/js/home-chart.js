@@ -4,7 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!raw) return;
     const { labels, counts, max } = JSON.parse(raw);
 
-    // 2) Generar un dataset apilado por cada unidad de entrenamiento
+    // 2) Asegurar al menos 7 entrenamientos para la escala vertical
+    const yMax = Math.max(max, 7);
+
+    // 3) Generar un dataset apilado por cada unidad de entrenamiento
     const datasets = Array.from({ length: max }, (_, level) => ({
         label: '',
         data: counts.map(c => c > level ? 1 : 0),
@@ -16,24 +19,24 @@ document.addEventListener("DOMContentLoaded", () => {
         stack: 'stack1'
     }));
 
-    // 3) Inicializar el chart en modo apilado
+    // 4) Inicializar el chart en modo apilado
     const ctx = document.getElementById("weekChart")?.getContext("2d");
     if (!ctx) return;
     new Chart(ctx, {
         type: "bar",
         data: { labels, datasets },
         options: {
-        plugins: {
-            legend: { display: false },
-            tooltip: { enabled: false }
-        },
-        scales: {
-            x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 0 } },
-            y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
-        },
-        datasets: {
-            bar: { barPercentage: 0.8, categoryPercentage: 0.7 }
-        }
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            },
+            scales: {
+                x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 0 } },
+                y: { stacked: true, beginAtZero: true, max: yMax, ticks: { stepSize: 1 } }
+            },
+            datasets: {
+                bar: { barPercentage: 0.8, categoryPercentage: 0.7 }
+            }
         }
     });
 });
