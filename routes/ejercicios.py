@@ -188,7 +188,6 @@ def ver(clave):
 
 
 
-
 @ejercicios_bp.route("/nuevo", methods=["GET", "POST"])
 @ejercicios_bp.route("/editar/<path:clave>", methods=["GET", "POST"])
 @login_required
@@ -328,9 +327,9 @@ def eliminar(clave):
     if n_plant_borrada < 1:
         msj_plant_borrada = ""
     elif n_plant_borrada == 1:
-        msj_plant_borrada = f"Se ha borrado 1 rutina porque {ejercicio.nombre} era su ultimo ejercicio"
+        msj_plant_borrada = f"Se ha borrado 1 rutina porque '{ejercicio.nombre}' era su ultimo ejercicio"
     else:
-        msj_plant_borrada = f"Se han borrado {n_plant_borrada} rutinas porque {ejercicio.nombre} era su ultimo ejercicio"
+        msj_plant_borrada = f"Se han borrado {n_plant_borrada} rutinas porque '{ejercicio.nombre}' era su ultimo ejercicio"
 
     # Actualizar los entrenamientos realizados donde aparezca
     for ent in srp.filter(
