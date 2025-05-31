@@ -104,7 +104,7 @@
                                         <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
                                             {% if datos is mapping %}
                                                 <!-- Ejercicio eliminado con nombre persistente -->
-                                                <h5 class="font-medium text-gray-900 dark:text-white mb-2">{{ datos.nombre }} <span class="text-xs text-gray-500 dark:text-gray-400">(eliminado)</span></h5>
+                                                <h5 class="font-medium text-gray-900 dark:text-white mb-2">{{ datos.nombre }} <span class="text-xs text-red-800 dark:text-red-300">(eliminado)</span></h5>
                                                 <ul class="space-y-1 pl-5 list-disc text-sm text-gray-700 dark:text-gray-300">
                                                 {% for s in datos.series %}
                                                     <li>{{ s.peso }} kg x {{ s.reps }} reps</li>

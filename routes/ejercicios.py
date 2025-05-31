@@ -45,7 +45,8 @@ def lista():
         equipamiento_filtro=equipamiento_filtro,
         grupos_validos=GRUPOS_VALIDOS,
         equipamientos_validos=EQUIPAMIENTOS_VALIDOS,
-        error_redirect=request.args.get("error_redirect", None)
+        error_redirect=request.args.get("error_redirect", None),
+        mensaje=request.args.get("mensaje", None)
     )
 
 
@@ -306,6 +307,7 @@ def eliminar(clave):
         return redirect(url_for("ejercicios.lista"))
 
     # Eliminar de las plantillas que lo contengan
+    n_plant_borrada = 0
     for plant in srp.filter(
         Plantilla,
         lambda p: p.is_owner(current_user.get_id()) and clave in p.ejercicios
@@ -318,10 +320,19 @@ def eliminar(clave):
         # Si la plantilla queda vacía, la borramos; si no, la guardamos con el cambio
         if not plant.ejercicios:
             srp.delete(plant.oid)
+            n_plant_borrada += 1
         else:
             srp.save(plant)
 
-    # Actualizar los entrenamientos realizados donte aparezca
+    # Notificar sobre las plantillas eliminadas como resultado si las hay
+    if n_plant_borrada < 1:
+        msj_plant_borrada = ""
+    elif n_plant_borrada == 1:
+        msj_plant_borrada = f"Se ha borrado 1 rutina porque {ejercicio.nombre} era su ultimo ejercicio"
+    else:
+        msj_plant_borrada = f"Se han borrado {n_plant_borrada} rutinas porque {ejercicio.nombre} era su ultimo ejercicio"
+
+    # Actualizar los entrenamientos realizados donde aparezca
     for ent in srp.filter(
         EntrenamientoRealizado,
         lambda ent: ent.is_owner(current_user.get_id()) and clave in ent.ejercicios
@@ -337,4 +348,4 @@ def eliminar(clave):
     # Eliminar el ejercicio definitivamente
     srp.delete(ejercicio.oid)
 
-    return redirect(url_for("ejercicios.lista"))
+    return redirect(url_for("ejercicios.lista", mensaje=msj_plant_borrada))

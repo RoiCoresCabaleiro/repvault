@@ -1,6 +1,6 @@
 # RepVault
 
-**RepVault** es una aplicación web para gestionar entrenamientos, rutinas y ejercicios, con seguimiento de sesiones y estadísticas.  <br><br>
+**RepVault** es una aplicación web para gestionar ejercicios, rutinas y entrenamientos, con seguimiento de sesiones y estadísticas.  <br><br>
 
 
 ## Instalación
@@ -26,7 +26,7 @@ Sigue estos pasos (Linux / WSL):
    ```
 
 4. **Configurar la secret key**  
-   Crea un archivo `secretkey.json` en la raíz del proyecto una clave secreta de 32 carácteres:
+   Crea un archivo `secretkey.json` en la raíz del proyecto una clave secreta de 32 caracteres:
    ```json
    {
      "SECRET_KEY": "una_cadena_secreta_super_segura"
@@ -45,4 +45,5 @@ Sigue estos pasos (Linux / WSL):
 
 ## IMPORTANTE  
 Para poder explorar completamente el funcionamiento del dashboard, las vistas de historial de entrenamientos y ejercicios así como las estadísticas de estos últimos, **registra** un usuario con el nombre **`prueba`** (en minúsculas).  
-Al hacerlo, se generarán automáticamente varios `EntrenamientoRealizado` de ejemplo necesarios para estas secciones.
+Al hacerlo, se generarán automáticamente varios `EntrenamientoRealizado` de ejemplo necesarios para estas secciones.<br><br>
+**RECOMENDACION**: Usar **`modo oscuro`**, ya que el `modo claro` todavía no está perfeccionado.

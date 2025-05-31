@@ -8,6 +8,12 @@
         </div>
     {% endif %}
 
+    {% if mensaje %}
+        <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 rounded-lg p-4 text-primary-800 dark:text-primary-300 text-sm mb-6">
+            {{ mensaje }}
+        </div>
+    {% endif %}
+
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white font-heading mb-4 md:mb-0">Mis ejercicios</h2>
         
