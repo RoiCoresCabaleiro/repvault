@@ -44,5 +44,5 @@ Sigue estos pasos (Linux / WSL):
 
 
 ## IMPORTANTE  
-Para poder explorar completamente el funcionamiento del dashboard, las vistas de historial de entrenamientos y ejercicios así como las estadísticas de estos últimos, **registra** un usuario con el nombre **`prueba`**.  
+Para poder explorar completamente el funcionamiento del dashboard, las vistas de historial de entrenamientos y ejercicios así como las estadísticas de estos últimos, **registra** un usuario con el nombre **`prueba`** (en minúsculas).  
 Al hacerlo, se generarán automáticamente varios `EntrenamientoRealizado` de ejemplo necesarios para estas secciones.

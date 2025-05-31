@@ -237,7 +237,12 @@ def finalizar():
     
     for soid, ejercicio in zip(ejercicios_filtrados, ej_iter):
         if ejercicio:
-            ejercicio.ultimas_series = ejercicios_filtrados[soid]
+            # Cada serie solo contiene peso y reps
+            series_filtradas = [
+                {"peso": s["peso"], "reps": s["reps"]}
+                for s in ejercicios_filtrados[soid]
+            ]
+            ejercicio.ultimas_series = series_filtradas
             srp.save(ejercicio)
     
     # — 6) Borrar entrenamiento en curso —
