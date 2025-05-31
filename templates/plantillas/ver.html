@@ -46,7 +46,9 @@
                     {% set series = plantilla.ejercicios[soid] %}
                     <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                         <div>
-                            <span class="font-medium text-gray-900 dark:text-white">{{ ej.nombre }}</span>
+                            <a href="{{ url_for('ejercicios.ver', clave=soid, from_plantilla=clave) }}">
+                                <span class="font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-300">{{ ej.nombre }}</span>
+                            </a>
                             <div class="flex mt-1 space-x-2">
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-300">
                                     {{ ej.grupo_muscular }}

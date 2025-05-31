@@ -46,7 +46,9 @@ def ver(clave):
     except (AttributeError, ValueError, NameError):
         return redirect(url_for("plantillas.lista", error_redirect="Rutina no encontrada."))
     
-    if not plantilla or not plantilla.is_owner(current_user.get_id()):
+    if (plantilla.__class__ != Plantilla):
+        return redirect(url_for("plantillas.lista", error_redirect="El objeto llamado no es una Rutina"))
+    elif not plantilla.is_owner(current_user.get_id()):
         return redirect(url_for("plantillas.lista", error_redirect="No tienes permiso para editar esta rutina."))
 
     # Obtener ejercicios de la plantilla

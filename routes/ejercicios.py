@@ -64,7 +64,9 @@ def ver(clave):
     except (AttributeError, ValueError, NameError):
         return redirect(url_for("ejercicios.lista", error_redirect="Ejercicio no encontrado."))
     
-    if not ejercicio.is_owner(current_user.get_id()):
+    if (ejercicio.__class__ != Ejercicio):
+        return redirect(url_for("ejercicios.lista", error_redirect="El objeto llamado no es un Ejercicio"))
+    elif not ejercicio.is_owner(current_user.get_id()):
         return redirect(url_for("ejercicios.lista", error_redirect="No tienes permiso para ver este ejercicio."))
 
     historial_ej = []
@@ -165,6 +167,13 @@ def ver(clave):
     rm_labels = sorted_dates
     rm_values = [ round(daily[d], 1) for d in sorted_dates ]
 
+    from_plantilla = request.args.get("from_plantilla")
+    if from_plantilla:
+        back_url = url_for("plantillas.ver", clave=from_plantilla)
+    else:
+        back_url = url_for("ejercicios.lista")
+
+
     return render_template(
         "ejercicios/ver.html",
         ejercicio=ejercicio,
@@ -172,7 +181,8 @@ def ver(clave):
         historial_ej=historial_ej,
         stats=stats,
         rm_labels=rm_labels,
-        rm_values=rm_values
+        rm_values=rm_values,
+        back_url=back_url
     )
 
 
